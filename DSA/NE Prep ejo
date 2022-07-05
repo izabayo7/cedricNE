@@ -1,0 +1,32 @@
+NE Prep ejo
+
+1. User module
+2. Locations module
+3. Diseases module
+4. Cases module
+
+
+Design:
+    1. Signup
+    2. Signin
+    3. Update account
+    4. dashboard
+
+    1. Locations page
+    2. Create Location
+    3. Update Location
+    4. Delete Location
+
+    1. Diseases page
+    2. Create Disease
+    3. Update Disease
+    4. Delete Disease
+
+    1. Cases page
+    2. Create Case
+    3. Update Case
+    4. Delete Case
+
+
+planning: 5 min (4)
+designing: 30 min (20)

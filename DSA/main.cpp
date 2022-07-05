@@ -180,10 +180,10 @@ int help(){
         else if (splitedCommands.at(0).compare("cases") == 0)
         {
             if(splitedCommands.size() == 2){
-                cout << "Total cases of " << splitedCommands.at(1) << " are " << countCases("cases.csv", splitedCommands.at(1), "") << endl;
+                cout << "Total cases of " << splitedCommands.at(1) << " = " << countCases("cases.csv", splitedCommands.at(1), "") << endl;
             }
             else if(splitedCommands.size() == 3){
-                cout << "Cases of " << splitedCommands.at(2) << " in " << splitedCommands.at(1) << " is " << countCases("cases.csv", splitedCommands.at(2), splitedCommands.at(1)) << endl;
+                cout << "Cases of " << splitedCommands.at(2) << " in " << splitedCommands.at(1) << " are " << countCases("cases.csv", splitedCommands.at(2), splitedCommands.at(1)) << endl;
             }
         }
         else if (splitedCommands.at(0).compare("list") == 0){
