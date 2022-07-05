@@ -1,2 +1,2 @@
-Id,locationId,diseaseId,cases
-1,1,1,24
+Location,Disease,cases
+Nyabihu,HIV,24

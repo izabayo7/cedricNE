@@ -1,13 +1,64 @@
 #include<iostream>
+#include <fstream>
+#include <sstream>
+#include <vector>
 
 using namespace std;
+
+void save_csv(string filename, string str) {
+    ofstream outfile;
+    outfile.open(filename, ios::app);
+    outfile << str << endl;
+    outfile.close();
+}
+
+void delete_line(string filename, string str) {
+    ifstream infile;
+    infile.open(filename);
+    string line;
+    stringstream ss;
+    while (getline(infile, line)) {
+        if (line.find(str) != string::npos) {
+            continue;
+        }
+        ss << line << endl;
+    }
+    infile.close();
+    ofstream outfile;
+    outfile.open(filename);
+    outfile << ss.str();
+    outfile.close();
+}
+
+string get_csv(string filename, string str) {
+    string line;
+    string result = "";
+    ifstream infile;
+    infile.open(filename);
+    while (getline(infile, line)) {
+        if (line.find(str) != string::npos) {
+            result = line;
+            break;
+        }
+    }
+    infile.close();
+    return result;
+}
+
+void print_csv(string filename) {
+    string line;
+    ifstream infile;
+    infile.open(filename);
+    while (getline(infile, line)) {
+        cout << line << endl;
+    }
+    infile.close();
+}
 
 
 int help(){
 
     string command;
-
-    cout << "Need any help? Type 'help' then press Enter key."<<endl;
 
     do{
         cout << "================================================"<<endl;
@@ -27,34 +78,53 @@ int help(){
         cout << "Enter your command:"<<endl;
         getline(cin,command);
         system("clear");
-        // check if string contains 'help' cpp
-        if (command.find("add") != string::npos)
-        {
-            cout << "add called"<<endl;
+
+        string commandCopy = command;
+        string space_delimiter = " ";
+        vector<string> splitedCommands{};
+
+        size_t pos = 0;
+        while ((pos = commandCopy.find(space_delimiter)) != string::npos) {
+            splitedCommands.push_back(commandCopy.substr(0, pos));
+            commandCopy.erase(0, pos + space_delimiter.length());
         }
-        else if (command.find("delete") != string::npos)
-        {
-            cout << "delete called"<<endl;
+        splitedCommands.push_back(commandCopy);
+
+        if(splitedCommands.size() > 1){
+            if (splitedCommands.at(0).compare("add") == 0)
+            {
+                save_csv("locations.csv", splitedCommands.at(1));
+                cout << "Location " << splitedCommands.at(1) << " is successfully added !"<<endl;
+            }
+            else if (splitedCommands.at(0).compare("delete") == 0)
+            {
+                delete_line("locations.csv", splitedCommands.at(1));
+                cout << "Location " << splitedCommands.at(1) << " is successfully deleted !"<<endl;
+            }
+            else if (splitedCommands.at(0).compare("record") == 0)
+            {
+                cout << "record called"<<endl;
+            }
+            else if (splitedCommands.at(0).compare("where") == 0)
+            {
+                cout << "where called"<<endl;
+            }
+            else if (splitedCommands.at(0).compare("cases") == 0)
+            {
+                cout << "cases called"<<endl;
+            }
         }
-        else if (command.find("record") != string::npos)
+        if (command.compare("help") == 0)
         {
-            cout << "record called"<<endl;
+            cout << "list diseases called"<<endl;
         }
         else if (command.compare("list locations") == 0)
         {
-            cout << "list locations called"<<endl;
+            print_csv("locations.csv");
         }
         else if (command.compare("list diseases") == 0)
         {
             cout << "list diseases called"<<endl;
-        }
-        else if (command.find("where") != string::npos)
-        {
-            cout << "where called"<<endl;
-        }
-        else if (command.find("cases") != string::npos)
-        {
-            cout << "cases called"<<endl;
         }
         else if(command.compare("help") != 0 && command.compare("Exit") != 0 && command.compare("exit") != 0)
         {
@@ -76,7 +146,16 @@ int main(){
     cout << "*  ******************************************* *"<<endl;
     cout << "================================================"<<endl;
     
-    help();
-    
+    string command;
+
+    cout << "Need any help? Type 'help' then press Enter key."<<endl;
+    getline(cin,command);
+    system("clear");
+    if(command.compare("help") == 0){
+        help();
+    }
+    cout << "================================================"<<endl;
+    cout << "*                  BYE  "<<endl;
+    cout << "================================================"<<endl;
     return 0;
 }
