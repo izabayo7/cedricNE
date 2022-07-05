@@ -217,7 +217,7 @@ int help(){
             cout << "Invalid command !"<<endl;
         }
         
-    } while(command.compare("Exit") != 0 && command.compare("exit") != 0);
+    } while(command.compare("exit") != 0);
     
     return 0;
 }
