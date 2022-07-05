@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -45,16 +46,71 @@ string get_csv(string filename, string str) {
     return result;
 }
 
-void print_csv(string filename) {
+vector<string> findRecordsByDisease(string filename, string disease) {
+    vector<string> result;
     string line;
     ifstream infile;
     infile.open(filename);
     while (getline(infile, line)) {
-        cout << line << endl;
+        if (line.find(disease) != string::npos) {
+            result.push_back(line);
+        }
     }
     infile.close();
+    return result;
 }
 
+int countCases(string filename, string disease, string location) {
+    int result=0;
+    string line;
+    ifstream infile;
+    infile.open(filename);
+    while (getline(infile, line)) {
+        if (line.find(disease) != string::npos && location.empty() ? true : line.find(location) != string::npos) {
+            size_t pos = 0;
+            while ((pos = line.find(",")) != string::npos) {
+                line.erase(0, pos + 1);
+            }
+            result += stoi(line);
+        }
+    }
+    infile.close();
+    return result;
+}            
+bool compareFunction (string a, string b) {return a<b;} 
+
+void print_csv(string filename, bool printDiseasesOnly = false) {
+    vector<string> foundDiseases{};
+    string line;
+    ifstream infile;
+    infile.open(filename);
+    while (getline(infile, line)) {
+        if (printDiseasesOnly) {
+            vector<string> parts{};
+            size_t pos = 0;
+            while ((pos = line.find(",")) != string::npos) {
+                parts.push_back(line.substr(0, pos));
+                line.erase(0, pos + 1);
+            }
+            string disease = (parts.size() > 1 ? parts.at(1) : "");
+            if (disease.empty()) {
+                continue;
+            }
+            if(!count(foundDiseases.begin(), foundDiseases.end(), disease)) {
+                foundDiseases.push_back(disease);
+            }
+        } else {
+            cout << line << endl;
+        }
+    }
+    infile.close();
+    if(printDiseasesOnly){
+        sort(foundDiseases.begin(),foundDiseases.end(),compareFunction);
+        for(auto disease:foundDiseases){
+            cout << disease << endl;
+        }
+    }
+}
 
 int help(){
 
@@ -77,6 +133,11 @@ int help(){
         cout << "================================================================================"<<endl;
         cout << "Enter your command:"<<endl;
         getline(cin,command);
+
+        for_each(command.begin(), command.end(), [](char & c){
+            c = ::tolower(c);
+        });
+
         system("clear");
 
         string commandCopy = command;
@@ -90,45 +151,57 @@ int help(){
         }
         splitedCommands.push_back(commandCopy);
 
-        if(splitedCommands.size() > 1){
-            if (splitedCommands.at(0).compare("add") == 0)
+        if (splitedCommands.at(0).compare("add") == 0)
+        {
+            save_csv("locations.csv", splitedCommands.at(1));
+            cout << "Location " << splitedCommands.at(1) << " is successfully added !"<<endl;
+        }
+        else if (splitedCommands.at(0).compare("delete") == 0)
+        {
+            delete_line("locations.csv", splitedCommands.at(1));
+            cout << "Location " << splitedCommands.at(1) << " is successfully deleted !"<<endl;
+        }
+        else if (splitedCommands.at(0).compare("record") == 0)
+        {
+            save_csv("cases.csv", splitedCommands.at(1).append(",").append(splitedCommands.at(2)).append(",").append(splitedCommands.at(3)));
+            cout << "Record is successfully added !"<<endl;
+        }
+        else if (splitedCommands.at(0).compare("where") == 0)
+        {
+            vector<string> result = findRecordsByDisease("cases.csv", splitedCommands.at(1));
+            for (int i = 0; i < result.size(); i++)
             {
-                save_csv("locations.csv", splitedCommands.at(1));
-                cout << "Location " << splitedCommands.at(1) << " is successfully added !"<<endl;
+                cout << result.at(i) << endl;
             }
-            else if (splitedCommands.at(0).compare("delete") == 0)
-            {
-                delete_line("locations.csv", splitedCommands.at(1));
-                cout << "Location " << splitedCommands.at(1) << " is successfully deleted !"<<endl;
-            }
-            else if (splitedCommands.at(0).compare("record") == 0)
-            {
-                cout << "record called"<<endl;
-            }
-            else if (splitedCommands.at(0).compare("where") == 0)
-            {
-                cout << "where called"<<endl;
-            }
-            else if (splitedCommands.at(0).compare("cases") == 0)
-            {
-                cout << "cases called"<<endl;
+            if(result.size() == 0){
+                cout << "No Location with this disease !"<<endl;
             }
         }
-        if (command.compare("help") == 0)
+        else if (splitedCommands.at(0).compare("cases") == 0)
         {
-            cout << "list diseases called"<<endl;
+            if(splitedCommands.size() == 2){
+                cout << "Total cases of " << splitedCommands.at(1) << " is " << countCases("cases.csv", splitedCommands.at(1), "") << endl;
+            }
+            else if(splitedCommands.size() == 3){
+                cout << "Cases of " << splitedCommands.at(2) << " in " << splitedCommands.at(1) << " is " << countCases("cases.csv", splitedCommands.at(2), splitedCommands.at(1)) << endl;
+            }
         }
-        else if (command.compare("list locations") == 0)
-        {
-            print_csv("locations.csv");
+        else if (splitedCommands.at(0).compare("list") == 0){
+            if(splitedCommands.at(1).compare("locations") == 0){
+                print_csv("locations.csv");
+            }
+            else if(splitedCommands.at(1).compare("diseases") == 0){
+                print_csv("cases.csv",true);
+            }
         }
-        else if (command.compare("list diseases") == 0)
-        {
-            cout << "list diseases called"<<endl;
+        else if (splitedCommands.at(0).compare("help") == 0){
+            help();
         }
-        else if(command.compare("help") != 0 && command.compare("Exit") != 0 && command.compare("exit") != 0)
-        {
-            cout << "Invalid command"<<endl;
+        else if (splitedCommands.at(0).compare("exit") == 0){
+            return 0;
+        }
+        else{
+            cout << "Invalid command !"<<endl;
         }
         
     } while(command.compare("Exit") != 0 && command.compare("exit") != 0);
