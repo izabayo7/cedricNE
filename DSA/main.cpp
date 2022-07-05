@@ -117,7 +117,7 @@ int help(){
     string command;
 
     do{
-        cout << "Enter your command:"<<endl;
+        cout << "Console >";
         getline(cin,command);
 
         for_each(command.begin(), command.end(), [](char & c){
@@ -231,6 +231,7 @@ int main(){
     cout << "*   It is developed by Izabayo Cedric as practical evaluation for the end of Year 3.   *"<<endl;
     cout << "****************************************************************************************"<<endl;
     cout << "========================================================================================"<<endl;
+    cout << "Starting Time: Tue Jul 05 08:00:00 CAT 2022                                             "<<endl;
     
 
     help();
