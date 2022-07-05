@@ -79,7 +79,7 @@ int countCases(string filename, string disease, string location) {
 bool compareFunction (string a, string b) {return a<b;} 
 
 void readData(string filename, bool printDiseasesOnly = false) {
-    vector<string> foundDiseases{};
+    vector<string> foundRecords{};
     string line;
     ifstream infile;
     infile.open(filename);
@@ -95,20 +95,19 @@ void readData(string filename, bool printDiseasesOnly = false) {
             if (disease.empty()) {
                 continue;
             }
-            if(!count(foundDiseases.begin(), foundDiseases.end(), disease)) {
-                foundDiseases.push_back(disease);
+            if(!count(foundRecords.begin(), foundRecords.end(), disease)) {
+                foundRecords.push_back(disease);
             }
         } else {
-            cout << line << endl;
+            foundRecords.push_back(line);
         }
     }
     infile.close();
-    if(printDiseasesOnly){
-        sort(foundDiseases.begin(),foundDiseases.end(),compareFunction);
-        for(auto disease:foundDiseases){
-            cout << disease << endl;
-        }
+    sort(foundRecords.begin(),foundRecords.end(),compareFunction);
+    for(auto data:foundRecords){
+        cout << data << endl;
     }
+    
 }
 
 int help(){
