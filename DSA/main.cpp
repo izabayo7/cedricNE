@@ -6,7 +6,7 @@
 
 using namespace std;
 
-void save_csv(string filename, string str) {
+void addData(string filename, string str) {
     ofstream outfile;
     outfile.open(filename, ios::app);
     outfile << str << endl;
@@ -31,19 +31,17 @@ void delete_line(string filename, string str) {
     outfile.close();
 }
 
-string get_csv(string filename, string str) {
+bool is_dupplicate(string filename, string newLine) {
     string line;
-    string result = "";
     ifstream infile;
     infile.open(filename);
     while (getline(infile, line)) {
-        if (line.find(str) != string::npos) {
-            result = line;
-            break;
+        if (line.compare(newLine) == 0) {
+            return true;
         }
     }
     infile.close();
-    return result;
+    return false;
 }
 
 vector<string> findRecordsByDisease(string filename, string disease) {
@@ -53,7 +51,8 @@ vector<string> findRecordsByDisease(string filename, string disease) {
     infile.open(filename);
     while (getline(infile, line)) {
         if (line.find(disease) != string::npos) {
-            result.push_back(line);
+            
+            result.push_back(line.substr(0, line.find(",")));
         }
     }
     infile.close();
@@ -66,7 +65,7 @@ int countCases(string filename, string disease, string location) {
     ifstream infile;
     infile.open(filename);
     while (getline(infile, line)) {
-        if (line.find(disease) != string::npos && location.empty() ? true : line.find(location) != string::npos) {
+        if (line.find(disease) != string::npos && (location.empty() ? true : line.find(location) != string::npos)) {
             size_t pos = 0;
             while ((pos = line.find(",")) != string::npos) {
                 line.erase(0, pos + 1);
@@ -79,7 +78,7 @@ int countCases(string filename, string disease, string location) {
 }            
 bool compareFunction (string a, string b) {return a<b;} 
 
-void print_csv(string filename, bool printDiseasesOnly = false) {
+void readData(string filename, bool printDiseasesOnly = false) {
     vector<string> foundDiseases{};
     string line;
     ifstream infile;
@@ -114,23 +113,11 @@ void print_csv(string filename, bool printDiseasesOnly = false) {
 
 int help(){
 
+    cout << "Need any help? Type 'help' then press Enter key."<<endl;
+
     string command;
 
     do{
-        cout << "================================================"<<endl;
-        cout << "*              H E L P     M E N U             *"<<endl;
-        cout << "================================================"<<endl;
-        cout << "add <Location>                              :Add a new location"<<endl;
-        cout << "delete <Location>                           :Delete an existing location"<<endl;
-        cout << "record <Location> <disease> <cases>         :Record a disease and its cases"<<endl;
-        cout << "list locations                              :List all existing locations"<<endl;
-        cout << "list diseases                               :List existing diseases in locations"<<endl;
-        cout << "where <disease>                             :Find where disease exists"<<endl;
-        cout << "cases <Location> <disease>                  :Find cases of a disease in location"<<endl;
-        cout << "cases <disease>                             :Find total cases of a given disease"<<endl;
-        cout << "help                                        :Prints user manual"<<endl;
-        cout << "Exit                                        :Exit the program"<<endl;
-        cout << "================================================================================"<<endl;
         cout << "Enter your command:"<<endl;
         getline(cin,command);
 
@@ -153,17 +140,31 @@ int help(){
 
         if (splitedCommands.at(0).compare("add") == 0)
         {
-            save_csv("locations.csv", splitedCommands.at(1));
+            if(is_dupplicate("locations.csv", splitedCommands.at(1))) {
+                cout << "This location already exist" << endl;
+                continue;
+            }
+            addData("locations.csv", splitedCommands.at(1));
             cout << "Location " << splitedCommands.at(1) << " is successfully added !"<<endl;
         }
         else if (splitedCommands.at(0).compare("delete") == 0)
         {
+            if(!is_dupplicate("locations.csv", splitedCommands.at(1))) {
+                cout << "This location does not exist" << endl;
+                continue;
+            }
             delete_line("locations.csv", splitedCommands.at(1));
+            delete_line("cases.csv", splitedCommands.at(1));
             cout << "Location " << splitedCommands.at(1) << " is successfully deleted !"<<endl;
         }
         else if (splitedCommands.at(0).compare("record") == 0)
         {
-            save_csv("cases.csv", splitedCommands.at(1).append(",").append(splitedCommands.at(2)).append(",").append(splitedCommands.at(3)));
+            string data = splitedCommands.at(1).append(",").append(splitedCommands.at(2)).append(",").append(splitedCommands.at(3));
+            if(is_dupplicate("cases.csv", data)) {
+                cout << "This record already exist" << endl;
+                continue;
+            }
+            addData("cases.csv", data);
             cout << "Record is successfully added !"<<endl;
         }
         else if (splitedCommands.at(0).compare("where") == 0)
@@ -180,7 +181,7 @@ int help(){
         else if (splitedCommands.at(0).compare("cases") == 0)
         {
             if(splitedCommands.size() == 2){
-                cout << "Total cases of " << splitedCommands.at(1) << " is " << countCases("cases.csv", splitedCommands.at(1), "") << endl;
+                cout << "Total cases of " << splitedCommands.at(1) << " are " << countCases("cases.csv", splitedCommands.at(1), "") << endl;
             }
             else if(splitedCommands.size() == 3){
                 cout << "Cases of " << splitedCommands.at(2) << " in " << splitedCommands.at(1) << " is " << countCases("cases.csv", splitedCommands.at(2), splitedCommands.at(1)) << endl;
@@ -188,14 +189,27 @@ int help(){
         }
         else if (splitedCommands.at(0).compare("list") == 0){
             if(splitedCommands.at(1).compare("locations") == 0){
-                print_csv("locations.csv");
+                readData("locations.csv");
             }
             else if(splitedCommands.at(1).compare("diseases") == 0){
-                print_csv("cases.csv",true);
+                readData("cases.csv",true);
             }
         }
         else if (splitedCommands.at(0).compare("help") == 0){
-            help();
+            cout << "================================================"<<endl;
+            cout << "*              H E L P     M E N U             *"<<endl;
+            cout << "================================================"<<endl;
+            cout << "add <Location>                              :Add a new location"<<endl;
+            cout << "delete <Location>                           :Delete an existing location"<<endl;
+            cout << "record <Location> <disease> <cases>         :Record a disease and its cases"<<endl;
+            cout << "list locations                              :List all existing locations"<<endl;
+            cout << "list diseases                               :List existing diseases in locations"<<endl;
+            cout << "where <disease>                             :Find where disease exists"<<endl;
+            cout << "cases <Location> <disease>                  :Find cases of a disease in location"<<endl;
+            cout << "cases <disease>                             :Find total cases of a given disease"<<endl;
+            cout << "help                                        :Prints user manual"<<endl;
+            cout << "Exit                                        :Exit the program"<<endl;
+            cout << "================================================================================"<<endl;
         }
         else if (splitedCommands.at(0).compare("exit") == 0){
             return 0;
@@ -219,14 +233,9 @@ int main(){
     cout << "*  ******************************************* *"<<endl;
     cout << "================================================"<<endl;
     
-    string command;
 
-    cout << "Need any help? Type 'help' then press Enter key."<<endl;
-    getline(cin,command);
-    system("clear");
-    if(command.compare("help") == 0){
-        help();
-    }
+    help();
+ 
     cout << "================================================"<<endl;
     cout << "*                  BYE  "<<endl;
     cout << "================================================"<<endl;
