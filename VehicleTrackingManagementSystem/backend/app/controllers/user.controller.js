@@ -66,6 +66,27 @@ exports.createUser = async (req, res) => {
   }
 }
 
+/***
+ *  Create's a new user
+ * @param req
+ * @param res
+ */
+ exports.getCurrentUser = async (req, res) => {
+  try {
+
+    const result = await User.findOne({
+      _id: req.user._id
+    });
+
+    return res.status(201).send({
+      message: 'OK',
+      data: result
+    });
+  } catch (e) {
+    return res.status(500).send(e.toString().split('\"').join(''))
+  }
+}
+
 /**
  * Login User
  * @param req

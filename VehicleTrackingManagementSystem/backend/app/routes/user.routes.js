@@ -2,7 +2,8 @@ const {
   createUser,
   updateUser,
   deleteUser,
-  userLogin
+  userLogin,
+  getCurrentUser
 } = require("../controllers/user.controller");
 const {
   auth
@@ -91,6 +92,30 @@ module.exports = (app) => {
      *         description: Internal Server Error
      */
     .delete([auth, deleteUser]);
+
+  router.route("/current")
+    /**
+     * @swagger
+     * /users/current:
+     *   get:
+     *     tags:
+     *       - User
+     *     description: Returns current User
+     *     security:
+     *       - bearerAuth: -[]
+     *     responses:
+     *       200:
+     *         description: OK
+     *       400:
+     *         description: Bad Request
+     *       404:
+     *         description: Not Found
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server Error
+     */
+    .get([auth, getCurrentUser])
 
   router.route("/login")
     /**
