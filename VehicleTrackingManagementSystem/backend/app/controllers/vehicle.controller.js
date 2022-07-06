@@ -84,7 +84,7 @@ exports.updateVehicle = async (req, res) => {
 
         if (!validateObjectId(req.params.id))
             return res.status(400).send({
-                messsage: 'Invalid id'
+                message: 'Invalid id'
             });
 
         const {
@@ -124,7 +124,7 @@ exports.deleteVehicle = async (req, res) => {
 
         if (!validateObjectId(req.params.id))
             return res.status(400).send({
-                messsage: 'Invalid id'
+                message: 'Invalid id'
             });
 
         const result = await Vehicle.findOneAndDelete({

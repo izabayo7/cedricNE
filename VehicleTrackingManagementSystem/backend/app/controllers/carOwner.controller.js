@@ -95,7 +95,7 @@ exports.updateCarOwner = async (req, res) => {
 
         if (!validateObjectId(req.params.id))
             return res.status(400).send({
-                messsage: 'Invalid id'
+                message: 'Invalid id'
             });
 
         const {
@@ -158,7 +158,7 @@ exports.deleteCarOwner = async (req, res) => {
 
         if (!validateObjectId(req.params.id))
             return res.status(400).send({
-                messsage: 'Invalid id'
+                message: 'Invalid id'
             });
 
         const result = await CarOwner.findOneAndDelete({

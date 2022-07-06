@@ -12,6 +12,8 @@ const {
     validateObjectId
 } = require("../utils/imports");
 
+const { isValid } = require("rwandan-plate-number");
+
 /***
  * Get all vehicleCarOwners
  * @param req
@@ -60,15 +62,19 @@ exports.createVehicleCarOwner = async (req, res) => {
             message: error.details[0].message
         });
 
+        if (!isValid(req.body.vehiclePlateNumber))
+            return res.status(400).send({
+                message: 'Invalid Plate Number'
+            });
 
         if (!validateObjectId(req.body.vehicle))
             return res.status(400).send({
-                messsage: 'Invalid vehicle id'
+                message: 'Invalid vehicle id'
             });
 
         if (!validateObjectId(req.body.carOwner))
             return res.status(400).send({
-                messsage: 'Invalid carOwner id'
+                message: 'Invalid carOwner id'
             });
 
         const vehicle = await Vehicle.findById(req.body.vehicle);
@@ -100,7 +106,7 @@ exports.createVehicleCarOwner = async (req, res) => {
 
         return res.status(201).send({
             message: 'CREATED',
-            data: result
+            data: {...result._doc,carOwner,vehicle}
         });
     } catch (e) {
         return res.status(500).send(e.toString().split('\"').join(''))
@@ -117,7 +123,7 @@ exports.updateVehicleCarOwner = async (req, res) => {
 
         if (!validateObjectId(req.params.id))
             return res.status(400).send({
-                messsage: 'Invalid id'
+                message: 'Invalid id'
             });
 
         const {
@@ -127,15 +133,19 @@ exports.updateVehicleCarOwner = async (req, res) => {
             message: error.details[0].message
         });
 
+        if (!isValid(req.body.vehiclePlateNumber))
+            return res.status(400).send({
+                message: 'Invalid Plate Number'
+            });
 
         if (!validateObjectId(req.body.vehicle))
             return res.status(400).send({
-                messsage: 'Invalid vehicle id'
+                message: 'Invalid vehicle id'
             });
 
         if (!validateObjectId(req.body.carOwner))
             return res.status(400).send({
-                messsage: 'Invalid carOwner id'
+                message: 'Invalid carOwner id'
             });
 
         const vehicle = await Vehicle.findById(req.body.vehicle);
@@ -176,7 +186,7 @@ exports.updateVehicleCarOwner = async (req, res) => {
 
         return res.status(200).send({
             message: 'UPDATED',
-            data: result
+            data: {...result,carOwner,vehicle}
         });
     } catch (e) {
         return res.status(500).send(e.toString().split('\"').join(''))
@@ -193,7 +203,7 @@ exports.deleteVehicleCarOwner = async (req, res) => {
 
         if (!validateObjectId(req.params.id))
             return res.status(400).send({
-                messsage: 'Invalid id'
+                message: 'Invalid id'
             });
 
         const result = await VehicleCarOwner.findOneAndDelete({
