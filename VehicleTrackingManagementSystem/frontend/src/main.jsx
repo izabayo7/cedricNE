@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
 import './index.css'
+import './App.css'
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,6 +10,11 @@ import {
 import { Provider } from 'react-redux';
 import { store } from './store/index';
 import { Toaster } from 'react-hot-toast';
+import Login from './pages/Login';
+import Users from './pages/carOwners';
+import Dashboard from './pages/Dashboard';
+import NotFound from './pages/404';
+import DashboardLayout from './components/Layout/Dashboard';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -17,9 +22,11 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
       <Router>
         <Routes>
-          <Route path="/" element={<App />} />
-          {/* <Route path="departments" element={<DashboardLayout children={<Departments />} />} />
-          <Route path="*" element={<NotFound />} /> */}
+        <Route path="/" element={<DashboardLayout children={<Dashboard />} />} />
+          <Route path="login" element={<Login />} />
+          <Route path="carOwners" element={<DashboardLayout children={<Users />} />} />
+          <Route path="vehicles" element={<DashboardLayout children={<Users />} />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
     </Provider>

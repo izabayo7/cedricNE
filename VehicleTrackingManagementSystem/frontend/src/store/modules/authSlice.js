@@ -25,7 +25,7 @@ export const AuthSlice = createSlice({
       const bearer = JSON.parse(token || "{}");
       axios.defaults.headers.common[
         "Authorization"
-      ] = `Bearer ${bearer?.accessToken}`;
+      ] = `Bearer ${bearer?.token}`;
       if (token) {
         try {
           let obj = jwt(token);
