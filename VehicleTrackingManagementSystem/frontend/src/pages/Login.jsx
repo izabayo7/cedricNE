@@ -26,7 +26,7 @@ function Login() {
     if (childRef.current)
       childRef.current.toggleModal();
   }
-
+  dispatch(loadUser());
   const navigate = useNavigate();
   const isLoggedIn = useSelector(selectIsLoggedIn);
 
@@ -56,10 +56,10 @@ function Login() {
       AppServices.login({ email, password }),
       {
         loading: 'Logging in ...',
-        success: async (response) => {
+        success: (response) => {
           if (response.data.token) {
             localStorage.setItem("user", JSON.stringify(response.data));
-            await loadUser()
+            dispatch(loadUser())
           }
           navigate('/');
           setSubmitted(false);

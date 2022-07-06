@@ -5,7 +5,6 @@ import Modal from "../components/Modal";
 import { selectIsLoggedIn } from "../store/modules/authSlice";
 import AppServices from "../services";
 import toast from "react-hot-toast";
-import { MDBDataTable } from 'mdbreact';
 import {
   selectVehicleCarOwners,
   setVehicleCarOwners,
