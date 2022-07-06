@@ -34,8 +34,8 @@ class AppServices {
   registerVehicle(body) {
     return axios.post(`${API_URL}/vehicles/`, body);
   }
-  getVehicles(query) {
-    return axios.get(`${API_URL}/vehilces?${query}`);
+  getVehicles(query="page=1&limit=10") {
+    return axios.get(`${API_URL}/vehicles?${query}`);
   }
 
   updateCarOwner(body, id) {
@@ -48,22 +48,22 @@ class AppServices {
   registerCarOwner(body) {
     return axios.post(`${API_URL}/carOwners/`, body);
   }
-  getCarOwners() {
-    return axios.get(`${API_URL}/carOwners`);
+  getCarOwners(query="page=1&limit=10") {
+    return axios.get(`${API_URL}/carOwners?${query}`);
   }
 
-  updateVehicleCarOwners(body, id) {
+  updateVehicleCarOwner(body, id) {
     return axios.put(`${API_URL}/vehicleCarOwners/` + id, body);
   }
-  deleteVehicleCarOwners(id) {
+  deleteVehicleCarOwner(id) {
     return axios.delete(`${API_URL}/vehicleCarOwners/` + id);
   }
 
-  registerVehicleCarOwners(body) {
+  registerVehicleCarOwner(body) {
     return axios.post(`${API_URL}/vehicleCarOwners/`, body);
   }
-  getVehicleCarOwnerss() {
-    return axios.get(`${API_URL}/vehicleCarOwners`);
+  getVehicleCarOwners(query="page=1&limit=10") {
+    return axios.get(`${API_URL}/vehicleCarOwners?${query}`);
   }
 }
 

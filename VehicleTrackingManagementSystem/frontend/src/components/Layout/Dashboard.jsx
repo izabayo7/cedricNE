@@ -177,7 +177,7 @@ const DashboardLayout = ({ children }) => {
                 to="/carOwners"
               >
                 <img
-                  src={useLocation().pathname === '/users' ? activeUser : user_}
+                  src={useLocation().pathname === '/carOwners' ? activeUser : user_}
                   alt=""
                 />
                 <span className="menu-link">
@@ -194,7 +194,7 @@ const DashboardLayout = ({ children }) => {
                 to="/vehicles"
               >
                 <img
-                  src={useLocation().pathname === '/departments' ? activeDepartment : department}
+                  src={useLocation().pathname === '/vehicles' ? activeDepartment : department}
                   alt=""
                 />
                 <span className="menu-link">

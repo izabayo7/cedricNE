@@ -8,7 +8,6 @@ const initialState = {
 export const AuthSlice = createSlice({
   name: "Vehicles",
   initialState,
-  // The `reducers` field lets us define reducers and generate associated actions
   reducers: {
     setVehicles: (state, action) => {
       state.vehicles = action.payload;
