@@ -1,7 +1,8 @@
 const {
   createUser,
   updateUser,
-  deleteUser
+  deleteUser,
+  userLogin
 } = require("../controllers/user.controller");
 const {
   auth
@@ -39,6 +40,39 @@ module.exports = (app) => {
      *         description: Internal Server Error
      */
     .post(createUser);
+
+  router.route("/login")
+    /**
+     * @swagger
+     * /users/login:
+     *   post:
+     *     tags:
+     *       - User
+     *     description: User Login
+     *     parameters:
+     *       - name: body
+     *         description: Fields for a user
+     *         in: body
+     *         required: true
+     *         schema:
+     *           properties:
+     *            email:
+     *              type: string
+     *            password:
+     *              type: string
+     *     responses: 
+     *       200:
+     *         description: OK
+     *       400:
+     *         description: Bad Request
+     *       404:
+     *         description: Not Found
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server Error
+     */
+    .post(userLogin)
 
   router.route("/:id")
     /**

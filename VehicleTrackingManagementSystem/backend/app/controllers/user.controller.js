@@ -1,6 +1,6 @@
 const {
   compare
-} = require("bcrypt");
+} = require("bcryptjs");
 const {
   validateUser,
   validateUserLogin,
@@ -62,7 +62,7 @@ exports.createUser = async (req, res) => {
       data: result
     });
   } catch (e) {
-    return res.status(500).send(emessage.toString().split('\"').join(''))
+    return res.status(500).send(e.toString().split('\"').join(''))
   }
 }
 
@@ -97,7 +97,7 @@ exports.userLogin = async (req, res) => {
     });
 
   } catch (e) {
-    return res.status(500).send(emessage.toString().split('\"').join(''))
+    return res.status(500).send(e.toString().split('\"').join(''))
   }
 }
 
@@ -154,7 +154,7 @@ exports.updateUser = async (req, res) => {
       data: result
     });
   } catch (e) {
-    return res.status(500).send(emessage.toString().split('\"').join(''))
+    return res.status(500).send(e.toString().split('\"').join(''))
   }
 }
 
@@ -179,6 +179,6 @@ exports.deleteUser = async (req, res) => {
       data: result
     });
   } catch (e) {
-    return res.status(500).send(emessage.toString().split('\"').join(''))
+    return res.status(500).send(e.toString().split('\"').join(''))
   }
 }

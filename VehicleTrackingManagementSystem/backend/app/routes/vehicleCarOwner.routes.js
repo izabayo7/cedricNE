@@ -21,6 +21,8 @@ module.exports = (app) => {
      *     tags:
      *       - VehicleCarOwner
      *     description: Returns all VehicleCarOwners
+     *     security:
+     *       - bearerAuth: -[]
      *     parameters:
      *       - name: page
      *         description: page number
@@ -50,6 +52,8 @@ module.exports = (app) => {
      *     tags:
      *       - VehicleCarOwner
      *     description: Create a vehicleCarOwner
+     *     security:
+     *       - bearerAuth: -[]
      *     parameters:
      *       - name: body
      *         description: Fields for a vehicleCarOwner

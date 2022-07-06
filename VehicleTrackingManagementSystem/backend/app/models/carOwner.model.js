@@ -1,9 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
-const {
-  NationalIdPattern
-} = require("./CarOwner.model");
 const mongoosePaginate = require('mongoose-paginate-v2');
+const { NationalIdPattern, PhoneRegex } = require("./user.model");
 
 /**
  * @swagger
@@ -57,7 +55,7 @@ module.exports.CarOwner = Model;
 module.exports.validateCarOwner = (body) => {
   return Joi.object({
     names: Joi.string().required(),
-    phone: Joi.string().required(), // validate phone
+    phone: Joi.string().pattern(PhoneRegex).required(), // validate phone
     address: Joi.string().required(),
     nationalId: Joi.string().pattern(NationalIdPattern).length(16).required(),
   }).validate(body);

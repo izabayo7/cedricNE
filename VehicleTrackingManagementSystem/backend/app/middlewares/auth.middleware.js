@@ -8,7 +8,7 @@ async function auth(req, res, next) {
     if (!token)
         return res.status(401).send({message:'No Token Found'})
     try {
-        const decoded = verify(token, process.env.KEY)
+        const decoded = verify(token, process.env.JWT_SECRET)
         const user = await User.findOne({
             _id: decoded.id
         })

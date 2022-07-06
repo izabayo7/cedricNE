@@ -1,7 +1,4 @@
 const {
-    compare
-} = require("bcrypt");
-const {
     CarOwner
 } = require("../models/carOwner.model");
 const {
@@ -22,7 +19,7 @@ const {
  */
 exports.getAllVehicleCarOwners = async (req, res) => {
     try {
-        const {
+        let {
             limit,
             page
         } = req.query;
@@ -33,7 +30,8 @@ exports.getAllVehicleCarOwners = async (req, res) => {
 
         const options = {
             page: page,
-            limit: limit
+            limit: limit,
+            populate: ['vehicle', 'carOwner']
         };
 
         const data = await VehicleCarOwner.paginate({}, options)
@@ -42,7 +40,7 @@ exports.getAllVehicleCarOwners = async (req, res) => {
             data
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -96,7 +94,7 @@ exports.createVehicleCarOwner = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -160,7 +158,7 @@ exports.updateVehicleCarOwner = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -190,6 +188,6 @@ exports.deleteVehicleCarOwner = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }

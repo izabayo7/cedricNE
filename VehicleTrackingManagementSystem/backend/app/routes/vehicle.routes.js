@@ -20,6 +20,8 @@ module.exports = (app) => {
      *     tags:
      *       - Vehicle
      *     description: Returns all Vehicles
+     *     security:
+     *       - bearerAuth: -[]
      *     parameters:
      *       - name: page
      *         description: page number
@@ -49,6 +51,8 @@ module.exports = (app) => {
      *     tags:
      *       - Vehicle
      *     description: Create a vehicle
+     *     security:
+     *       - bearerAuth: -[]
      *     parameters:
      *       - name: body
      *         description: Fields for a vehicle

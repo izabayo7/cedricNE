@@ -58,7 +58,7 @@ var schema = mongoose.Schema({
 // generate login token
 schema.methods.generateAuthToken = function () {
   return jwt.sign({
-    id: this.user_name,
+    id: this._id,
   }, process.env.JWT_SECRET, {
     expiresIn: '5h'
   })
@@ -66,15 +66,16 @@ schema.methods.generateAuthToken = function () {
 
 const Model = mongoose.model("user", schema);
 module.exports.NationalIdPattern = /(?<!\d)\d{16}(?!\d)/;
+module.exports.PhoneRegex = /^[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*$/
 
 module.exports.User = Model;
 module.exports.validateUser = (body) => {
   return Joi.object({
     names: Joi.string().required(),
     email: Joi.string().email().required(),
-    phone: Joi.string().required(), // validate phone
-    password: Joi.string().required(),
-    nationalId: Joi.string().pattern(NationalIdPattern).length(16).required(),
+    phone: Joi.string().pattern(this.PhoneRegex).required(), // validate phone
+    password: Joi.string().min(6).required(),
+    nationalId: Joi.string().pattern(this.NationalIdPattern).length(16).required(),
   }).validate(body);
 };
 

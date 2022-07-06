@@ -1,7 +1,4 @@
 const {
-    compare
-} = require("bcrypt");
-const {
     validateCarOwner,
     CarOwner
 } = require("../models/carOwner.model");
@@ -13,7 +10,7 @@ const {
  */
 exports.getAllCarOwners = async (req, res) => {
     try {
-        const {
+        let {
             limit,
             page
         } = req.query;
@@ -33,7 +30,7 @@ exports.getAllCarOwners = async (req, res) => {
             data
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -82,7 +79,7 @@ exports.createCarOwner = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -145,7 +142,7 @@ exports.updateCarOwner = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -179,6 +176,6 @@ exports.deleteCarOwner = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }

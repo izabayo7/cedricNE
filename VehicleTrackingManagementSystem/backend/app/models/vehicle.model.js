@@ -60,8 +60,8 @@ module.exports.validateVehicle = (body) => {
   return Joi.object({
     chasisNumber: Joi.string().required(),
     manufactureCompany: Joi.string().required(),
-    manufactureYear: Joi.string().required(),
-    price: Joi.string().required(),
+    manufactureYear: Joi.number().min(0).max(parseInt(new Date().getFullYear()+1)).required(),
+    price: Joi.number().min(0).required(),
     modelName: Joi.string().required(),
   }).validate(body);
 };

@@ -1,7 +1,4 @@
 const {
-    compare
-} = require("bcrypt");
-const {
     validateVehicle,
     Vehicle
 } = require("../models/vehicle.model");
@@ -19,7 +16,7 @@ const {
  */
 exports.getAllVehicles = async (req, res) => {
     try {
-        const {
+        let {
             limit,
             page
         } = req.query;
@@ -39,7 +36,7 @@ exports.getAllVehicles = async (req, res) => {
             data
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -59,6 +56,11 @@ exports.createVehicle = async (req, res) => {
             message: error.details[0].message
         });
 
+        const dupplicate = await Vehicle.findOne(req.body);
+        if (dupplicate) return res.status(400).send({
+            message: 'Vehicle already exists'
+        });
+
         const newVehicle = new Vehicle(req.body);
 
         const result = await newVehicle.save();
@@ -68,7 +70,7 @@ exports.createVehicle = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -108,7 +110,7 @@ exports.updateVehicle = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }
 
@@ -142,6 +144,6 @@ exports.deleteVehicle = async (req, res) => {
             data: result
         });
     } catch (e) {
-        return res.status(500).send(emessage.toString().split('\"').join(''))
+        return res.status(500).send(e.toString().split('\"').join(''))
     }
 }

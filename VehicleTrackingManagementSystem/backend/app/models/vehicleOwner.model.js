@@ -42,7 +42,7 @@ var schema = mongoose.Schema({
 });
 schema.plugin(mongoosePaginate);
 
-const Model = mongoose.model("vehicle", schema);
+const Model = mongoose.model("vehicleOwner", schema);
 
 module.exports.VehicleCarOwner = Model;
 module.exports.validateVehicleCarOwner = (body) => {
