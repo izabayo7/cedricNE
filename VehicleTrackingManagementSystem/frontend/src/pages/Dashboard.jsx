@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import '../assets/scss/dashboard.scss'
-import { selectIsAdmin, selectIsLoggedIn, selectUser } from '../store/modules/authSlice';
+import { selectIsLoggedIn, selectUser } from '../store/modules/authSlice';
 import AppServices, { API_URL } from "../services";
 // import { addRegistrationNumber, selectRegistrationNumbers, setRegistrationNumbers, updateRegistrationNumber } from '../store/modules/registrationNumberSlice';
 import Modal from '../components/Modal';
@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 function Dashboard() {
   // const isLoggedIn = useSelector(selectIsLoggedIn)
-  // const isAdmin = useSelector(selectIsAdmin)
   // const dispatch = useDispatch();
 
   // const regNumbers = useSelector(selectRegistrationNumbers);

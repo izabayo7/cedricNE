@@ -1,42 +1,30 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState,useRef } from 'react'
 import '../assets/scss/dashboard.scss'
 import '../assets/scss/modal.scss'
 import Modal from '../components/Modal';
-import { selectIsAdmin, selectIsLoggedIn } from '../store/modules/authSlice';
-// import { addUser, removeUser, selectUsers, setUsers, updateUser } from '../store/modules/userSlice';
+import { selectIsLoggedIn } from '../store/modules/authSlice';
 import AppServices from "../services";
 import toast from 'react-hot-toast';
-// import { selectDepartments, setDepartments } from '../store/modules/departmentSlice';
+import { selectCarOwners, setCarOwners,addCarOwner,updateCarOwner,removeCarOwner } from '../store/modules/carOwnerSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
-function Users() {
+function CarOwners() {
   const isLoggedIn = useSelector(selectIsLoggedIn);
-  const isAdmin = useSelector(selectIsAdmin);
-  const users = useSelector(selectUsers);
-  const departments = useSelector(selectDepartments);
-  const navigate = useNavigate();
+  const carOwners = useSelector(selectCarOwners);
   const dispatch = useDispatch();
   const [filter, setFilter] = useState({});
 
   useEffect(() => {
-    if (!isAdmin && isLoggedIn) {
-      navigate('/');
-    } else if (isLoggedIn) {
-      AppServices.getDepartments().then((response) => {
-        if (response.data.length) {
-          dispatch(setDepartments(response.data))
-        }
-      })
-      AppServices.getUsers().then((response) => {
-        if (response.data.length) {
-          dispatch(setUsers(response.data))
+    if (isLoggedIn) {
+      AppServices.getCarOwners().then((response) => {
+        if (response.data.data) {
+          dispatch(setCarOwners(response.data.data))
         }
       })
     }
-  }, [isLoggedIn, isAdmin])
+  }, [isLoggedIn])
 
-  const childRef = useRef<Current>(null);
+  const childRef = useRef(null);
 
   const toggleModal = () => {
     if (childRef.current)
@@ -44,39 +32,33 @@ function Users() {
   }
 
 
-  const [selectedUser, setSelectedUser] = useState({})
-  const [selectedUserId, setSelectedUserId] = useState("")
+  const [selectedCarOwner, setSelectedCarOwner] = useState({})
+  const [selectedCarOwnerId, setSelectedCarOwnerId] = useState("")
   const [isDeleting, setIsDeleting] = useState(false)
 
-  useEffect(() => {
-    if (!selectedUser.departmentId && departments.length)
-      selectedUser.departmentId = departments[0].id || "";
-  }, [selectedUser, departments])
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const isUpdating = selectedUserId !== "";
-    // if(isUpdating)
-
+    const isUpdating = selectedCarOwnerId !== "";
 
     toast.promise(
-      isDeleting ? AppServices.deleteUser(selectedUserId) : isUpdating ? AppServices.updateUser({ ...selectedUser, password: undefined }, selectedUserId) : AppServices.register(selectedUser),
+      isDeleting ? AppServices.deleteCarOwner(selectedCarOwnerId) : isUpdating ? AppServices.updateCarOwner(selectedCarOwner, selectedCarOwnerId) : AppServices.registerCarOwner(selectedCarOwner),
       {
-        loading: `${isDeleting ? 'Deleting' : isUpdating ? 'Updating' : 'Creating'} user ...`,
+        loading: `${isDeleting ? 'Deleting' : isUpdating ? 'Updating' : 'Creating'} carOwner ...`,
         success: (response) => {
-          if (isDeleting) dispatch(removeUser(selectedUserId));
-          else if (isUpdating) dispatch(updateUser(response.data));
-          else dispatch(addUser(response.data))
+          if (isDeleting) dispatch(removeCarOwner(selectedCarOwnerId));
+          else if (isUpdating) dispatch(updateCarOwner({...response.data.data,...selectedCarOwner}));
+          else dispatch(addCarOwner(response.data.data))
 
-          if (selectedUser.password?.length) {
-            AppServices.updateUserPassword({ newPassword: selectedUser.password, confirmPassword: selectedUser.password }, selectedUserId)
+          if (selectedCarOwner.password?.length) {
+            AppServices.updateCarOwnerPassword({ newPassword: selectedCarOwner.password, confirmPassword: selectedCarOwner.password }, selectedCarOwnerId)
           }
 
-          let message = `${isDeleting ? 'Deleted' : isUpdating ? 'Updated' : 'Created'} user successfully`
-          if (isUpdating) setSelectedUserId("");
+          let message = `${isDeleting ? 'Deleted' : isUpdating ? 'Updated' : 'Created'} carOwner successfully`
+          if (isUpdating) setSelectedCarOwnerId("");
           if (isDeleting) setIsDeleting(false);
-          setSelectedUser({});
+          setSelectedCarOwner({});
           toggleModal();
           return message;
         },
@@ -87,9 +69,9 @@ function Users() {
               error.response.data.message) ||
             error.message ||
             error.toString();
-          if (typeof message === 'object') {
-            message = "Can't remove a user that has registrationNumbers"
-          }
+            if(message.includes("required pattern"))
+            if(message.includes("phone")) return "invalid phone number";
+            else return "invalid nationalId"
           return message;
         },
       }
@@ -100,7 +82,7 @@ function Users() {
     <div className="pl-10 pt-10">
       <div>
         <div className="title">
-          System users
+          Car Owners
         </div>
         <div className="md:flex">
           <div className='w-full'>
@@ -111,7 +93,7 @@ function Users() {
                 </svg>
 
                 </div>
-                <div className='mt-1'>Create a new user</div>
+                <div className='mt-1'>Create a new car owner</div>
 
               </button>
               </div>
@@ -133,23 +115,16 @@ function Users() {
               mb-2 mb-0
             "
                   >
-                    <th>User names</th>
-                    <th>Role</th>
-                    <th>Department</th>
-                    <th>Date added </th>
+                    <th>Names</th>
+                    <th>Phone number</th>
+                    <th>Address</th>
+                    <th>National Id</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody className="sm:flex-1 sm:flex-none">
-                  {((elements) => {
-                    if (filter.search) {
-                      return elements.filter(element => element.firstName.toLowerCase().includes(filter?.search?.toLowerCase() || "")
-                        || element.lastName.toLowerCase().includes(filter?.search?.toLowerCase() || "")
-                        || element.email.toLowerCase().includes(filter?.search?.toLowerCase() || "")
-                      )
-                    }
-                    return elements
-                  })(users).map((user) => <tr key={user.id} className="
+                  {
+                  carOwners.map((doc) => <tr key={doc._id} className="
               sm:flex
               sm:flex-col
               sm:flex-no
@@ -163,24 +138,24 @@ function Users() {
                     <td className='pt-1 p-3'>
                       <div className="flex">
                         <div></div>
-                        <div>{user.firstName} {user.lastName}</div>
+                        <div>{doc?.names}</div>
                       </div>
                     </td>
-                    <td className='pt-1 p-3'>                      <div className='status rounded'>
-                      {user.isAdmin ? 'Admin' : 'User'}
+                    <td className='pt-1 p-3'>                      <div className=''>
+                      {doc?.phone}
                     </div></td>
                     <td className='pt-1 p-3'>
-                      <div className='status'>
-                        {user.department?.name}
+                      <div className=''>
+                        {doc?.address}
                       </div>
                     </td>
-                    <td className='pt-1 p-3'>{((date) => { return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}` })(new Date(user.createdAt || ""))}</td>
+                    <td className='pt-1 p-3'>{doc?.nationalId}</td>
                     <td className='pt-1 p-3'>
                       <div className="flex">
-                        <div onClick={() => { setSelectedUser({ firstName: user.firstName, lastName: user.lastName, departmentId: user.departmentId, email: user.email, gender: user.gender }); setSelectedUserId(user.id || ""); toggleModal(); }} className='status cursor-pointer rounded mr-2'>
+                        <div onClick={() => { setSelectedCarOwner({ names: doc.names, address: doc.address, phone: doc.phone, nationalId: doc.nationalId}); setSelectedCarOwnerId(doc._id); toggleModal(); }} className='status cursor-pointer rounded mr-2'>
                           Update
                         </div>
-                        <div onClick={() => { setIsDeleting(true); setSelectedUserId(user.id || ""); toggleModal() }} className='status cursor-pointer rounded'>
+                        <div onClick={() => { setIsDeleting(true); setSelectedCarOwnerId(doc._id); toggleModal() }} className='status cursor-pointer rounded'>
                           Delete
                         </div>
                       </div>
@@ -195,7 +170,7 @@ function Users() {
       <Modal ref={childRef} width="767px">
         {isDeleting ? <div>
           <div className="modal-title text-center my-10">
-            Are you sure you want to delete the selected user ?
+            Are you sure you want to delete the selected carOwner ?
           </div>
           <div className="modal-footer my-10">
             <div className="flex justify-center">
@@ -205,54 +180,30 @@ function Users() {
           </div>
         </div> : <div>
           <div className="modal-title text-center my-10">
-            {selectedUserId !== "" ? "Update user" : "Create user"}
+            {selectedCarOwnerId !== "" ? "Update carOwner" : "Create carOwner"}
           </div>
           <div className="modal-body">
-            <form action="#" method="POST">
+            <form>
               <div className="">
                 <div className="px-4 py-5 bg-white sm:p-6">
                   <div className="grid grid-cols-6 gap-6">
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">First name</label>
-                      <input defaultValue={selectedUser?.firstName} onChange={(e) => { setSelectedUser({ ...selectedUser, firstName: e.target.value || "" }) }} type="text" name="first-name" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Names</label>
+                      <input defaultValue={selectedCarOwner?.names} onChange={(e) => { setSelectedCarOwner({ ...selectedCarOwner, names: e.target.value }) }} type="text" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Last name</label>
-                      <input defaultValue={selectedUser?.lastName} onChange={(e) => { setSelectedUser({ ...selectedUser, lastName: e.target.value || "" }) }} type="text" name="last-name" id="last-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Address</label>
+                      <input defaultValue={selectedCarOwner?.address} onChange={(e) => { setSelectedCarOwner({ ...selectedCarOwner, address: e.target.value }) }} type="text" id="last-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">Email address</label>
-                      <input defaultValue={selectedUser?.email} onChange={(e) => { setSelectedUser({ ...selectedUser, email: e.target.value || "" }) }} type="text" name="email-address" id="email-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">Phone</label>
+                      <input defaultValue={selectedCarOwner?.phone} onChange={(e) => { setSelectedCarOwner({ ...selectedCarOwner, phone: e.target.value }) }} type="number" maxLength={10} minLength={10} id="email-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                      <input defaultValue={""} onChange={(e) => { setSelectedUser({ ...selectedUser, password: e.target.value || "" }) }} type="password" name="email-address" id="password" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
-                    </div>
-
-                    <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="department" className="block text-sm font-medium text-gray-700">Department</label>
-                      <select defaultValue={selectedUser?.departmentId} onChange={(e) => { setSelectedUser({ ...selectedUser, departmentId: e.target.value || "" }) }} id="department" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="">Select department</option>
-                        {departments.map((department) => <option key={department.id} value={department.id}>{department.name}</option>)}
-                      </select>
-                    </div>
-
-                    <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="gender" className="block text-sm font-medium text-gray-700">Gender</label>
-                      <select defaultValue={selectedUser?.gender} onChange={(e) => {
-                        setSelectedUser({
-                          ...selectedUser, gender: ((str) => {
-                            if (str === "male") return 'male'
-                            return 'female'
-                          })(e.target.value)
-                        })
-                      }} id="department" name="country" className="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
-                        <option value="">Select gender</option>
-                        <option value="male">male</option>
-                        <option value="female">female</option>
-                      </select>
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700">NationalId</label>
+                      <input defaultValue={selectedCarOwner?.nationalId} onChange={(e) => { setSelectedCarOwner({ ...selectedCarOwner, nationalId: e.target.value }) }} type="number" maxLength={16} minLength={16} id="password" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                   </div>
@@ -272,4 +223,4 @@ function Users() {
   )
 }
 
-export default Users
+export default CarOwners

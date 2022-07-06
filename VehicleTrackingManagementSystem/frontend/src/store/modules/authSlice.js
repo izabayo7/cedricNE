@@ -1,11 +1,34 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice,createAsyncThunk } from "@reduxjs/toolkit";
 import jwt from "jwt-decode";
 import axios from "axios";
+import AppServices from "../../services";
+import { useDispatch } from "react-redux";
 
 const initialState = {
-  user: {name: "test one two"},
+  user: { name: "test one two" },
   isLoggedIn: false,
 };
+
+export const loadUser = createAsyncThunk(
+  'auth/loadUser',
+  async () => {
+    const token = localStorage.getItem("user");
+    if(token){
+      const bearer = JSON.parse(token || "{}");
+      axios.defaults.headers.common[
+        "Authorization"
+      ] = `Bearer ${bearer?.token}`;
+
+      let { data } = await AppServices.getCurrentUser();
+      
+      if(!data.data){
+        localStorage.removeItem('user');
+      }
+
+      return data.data;
+    }
+  }
+);
 
 export const AuthSlice = createSlice({
   name: "Auth",
@@ -20,35 +43,29 @@ export const AuthSlice = createSlice({
       state.user = undefined;
       state.isLoggedIn = false;
     },
-    loadUser: (state) => {
-      const token = localStorage.getItem("user");
-      const bearer = JSON.parse(token || "{}");
-      axios.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${bearer?.token}`;
-      if (token) {
-        try {
-          let obj = jwt(token);
-          if (obj.exp){
-            if (new Date() < new Date(obj.exp * 1000)) {
-              state.user = obj;
-              state.isLoggedIn = true;
-            }
-          } else {
-            localStorage.removeItem('user')
-          }
-        } catch (error) {
-          console.log(error);
-        }
-      }
+    setUser: (state,action) => {
+      state.user = action.payload;
+      state.isLoggedIn = true;
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(loadUser.pending, (state) => {
+        state.user = {};
+      })
+      .addCase(loadUser.fulfilled, (state, action) => {
+        state.user = action.payload;
+        if(action.payload) state.isLoggedIn=true;
+      })
+      .addCase(loadUser.rejected, (state) => {
+        state.user = {};
+      });
   },
 });
 
-export const { login, logout, loadUser } = AuthSlice.actions;
+export const { login, logout,setUser } = AuthSlice.actions;
 
 export const selectUser = (state) => state.auth.user;
 export const selectIsLoggedIn = (state) => state.auth.isLoggedIn;
-export const selectIsAdmin = (state) => state.auth.user?.isAdmin;
 
 export default AuthSlice.reducer;

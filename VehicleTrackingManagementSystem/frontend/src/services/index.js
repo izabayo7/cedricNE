@@ -12,6 +12,10 @@ class AppServices {
     return axios.put(`${API_URL}/users`, body);
   }
 
+  getCurrentUser() {
+    return axios.get(`${API_URL}/users/current`);
+  }
+
   register(body) {
     return axios.post(`${API_URL}/users`, body);
   }

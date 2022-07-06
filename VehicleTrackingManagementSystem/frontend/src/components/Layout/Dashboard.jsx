@@ -1,10 +1,8 @@
-import { FC, PropsWithChildren, ReactElement, useEffect, useRef, useState, } from 'react'
+import { useEffect, useRef, useState, } from 'react'
 import BG from '../../assets/images/nav-bg.svg'
 import logo from '../../assets/images/logo.png'
 import activeHome from '../../assets/images/white-home-icon.svg'
 import home from '../../assets/images/blued-home-icon.svg'
-import settings from '../../assets/images/settings.svg'
-import activeSettings from '../../assets/images/active-settings.svg'
 import user_ from '../../assets/images/user.svg'
 import activeUser from '../../assets/images/active-user.svg'
 import department from '../../assets/images/cluster.svg'
@@ -12,7 +10,7 @@ import activeDepartment from '../../assets/images/active-cluster.svg'
 import '../../assets/scss/dashboardLayout.scss'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
-import { loadUser, selectUser, logout } from '../../store/modules/authSlice'
+import { selectUser, logout, loadUser } from '../../store/modules/authSlice'
 import Modal from '../Modal';
 import toast from 'react-hot-toast';
 import AppServices from "../../services";
@@ -31,6 +29,7 @@ const DashboardLayout = ({ children }) => {
   const [menuStatus, setMenuStatus] = useState(false);
   const [sidebarStatus, setSidebarStatus] = useState(false);
   const [loaded, setLoaded] = useState(false);
+  const [admin, setAdmin] = useState({});
   const toggleMenu = () => {
     setMenuStatus(!menuStatus);
   }
@@ -46,13 +45,12 @@ const DashboardLayout = ({ children }) => {
     navigate('/login');
   }
 
-
+  
   useEffect(() => {
-    if (!loaded) {
+    if(!loaded){
       dispatch(loadUser());
       setLoaded(true);
-    }
-    else if (!user) {
+    }else if (!user) {
       navigate('/login');
     }
   }, [loaded])
@@ -82,15 +80,10 @@ const DashboardLayout = ({ children }) => {
   const updateUser = () => {
 
     toast.promise(
-      AppServices.updateUser({ departmentId: user?.departmentId || "", gender: user?.gender || "male", email, firstName, lastName }, user?.id || ""),
+      AppServices.updateUser(admin, user?.id),
       {
         loading: 'Updating account ...',
         success: (response) => {
-
-          if (password.length) {
-            AppServices.updateUserPassword({ newPassword: password, confirmPassword: password }, user?.id || "")
-          }
-
           dispatch(loadUser())
           toggleModal();
           return "Account updated successfully";
@@ -102,12 +95,13 @@ const DashboardLayout = ({ children }) => {
               error.response.data.message) ||
             error.message ||
             error.toString();
+            if(message.includes("required pattern"))
+            if(message.includes("phone")) return "invalid phone number";
+            else return "invalid nationalId"
           return message;
         },
       }
     );
-
-    dispatch(loadUser());
   }
 
 
@@ -216,11 +210,14 @@ const DashboardLayout = ({ children }) => {
           >
             {menuStatus ?
               <div className="absolute">
-                <button onClick={toggleModal}>Settings</button>
+                <button onClick={()=>{
+                  toggleModal();
+                  if(user) setAdmin({names: user.names,email:user.email,phone:user.phone,nationalId:user.nationalId});
+                }}>Settings</button>
                 <button onClick={handleLogout}>Logout</button>
               </div> : ''}
-            <div className="avatar"><div className='mt-2'>WM</div></div>
-            <div className="user-name ml-2 mt-1">{user?.firstName} ...</div>
+            <div className="avatar"><div className='mt-2'>{user?.names ? user?.names[0] : ''}</div></div>
+            <div className="user-name ml-2 mt-1">{user?.names?.split(' ')[0]} ...</div>
           </div>
         </div>
         <div className=' full-height w-full bg-customBg'>{children}</div>
@@ -236,23 +233,31 @@ const DashboardLayout = ({ children }) => {
                 <div className="px-4 py-5 bg-white sm:p-6">
                   <div className="grid grid-cols-6 gap-6">
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">First name</label>
-                      <input defaultValue={user?.firstName} onChange={(e) => { setFirstName(e.target.value) }} type="text" name="first-name" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="first-name" className="block text-sm font-medium text-gray-700">Names`</label>
+                      <input defaultValue={user?.names} onChange={(e) => { setAdmin({ ...admin, names: e.target.value || "" }) }} type="text" id="first-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="last-name" className="block text-sm font-medium text-gray-700">Last name</label>
-                      <input defaultValue={user?.lastName} onChange={(e) => { setLastName(e.target.value) }} type="text" name="last-name" id="last-name" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                      <input defaultValue={user?.email} onChange={(e) => { setAdmin({ ...admin, email: e.target.value || "" }) }} type="email" id="email" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
 
                     <div className="col-span-6 sm:col-span-3">
-                      <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">Email address</label>
-                      <input defaultValue={user?.email} onChange={(e) => { setEmail(e.target.value) }} type="text" name="email-address" id="email-address" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
+                      <input defaultValue={user?.phone} onChange={(e) => { setAdmin({ ...admin, phone: e.target.value || "" }) }} type="text" id="phone" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
                     <div className="col-span-6 sm:col-span-3">
+                      <label htmlFor="nid" className="block text-sm font-medium text-gray-700">NationalId</label>
+                      <input defaultValue={user?.nationalId} onChange={(e) => { setAdmin({ ...admin, nationalId: e.target.value || "" }) }} type="string" id="nid" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    </div>
+                    {/* <div className="col-span-6 sm:col-span-3">
                       <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                      <input defaultValue={""} onChange={(e) => { setPassword(e.target.value) }} type="password" name="email-address" id="password" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                      <input defaultValue={""} onChange={(e) => { setAdmin({ ...admin, password: e.target.value || "" }) }} type="password" id="password" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
                     </div>
+                    <div className="col-span-6 sm:col-span-3">
+                      <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+                      <input defaultValue={""} onChange={(e) => { setAdmin({ ...admin, confirmPassword: e.target.value || "" }) }} type="password" id="confirmPassword" className="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" />
+                    </div> */}
                   </div>
                 </div>
                 <div className="">

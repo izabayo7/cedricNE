@@ -132,7 +132,7 @@ exports.updateUser = async (req, res) => {
 
     const {
       error
-    } = validateUser(req.body);
+    } = validateUser(req.body,true);
     if (error) return res.status(400).send({
       message: error.details[0].message
     });

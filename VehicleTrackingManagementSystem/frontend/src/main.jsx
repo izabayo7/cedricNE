@@ -11,7 +11,7 @@ import { Provider } from 'react-redux';
 import { store } from './store/index';
 import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
-import Users from './pages/carOwners';
+import CarOwners from './pages/carOwners';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/404';
 import DashboardLayout from './components/Layout/Dashboard';
@@ -24,8 +24,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Routes>
         <Route path="/" element={<DashboardLayout children={<Dashboard />} />} />
           <Route path="login" element={<Login />} />
-          <Route path="carOwners" element={<DashboardLayout children={<Users />} />} />
-          <Route path="vehicles" element={<DashboardLayout children={<Users />} />} />
+          <Route path="carOwners" element={<DashboardLayout children={<CarOwners />} />} />
+          {/* <Route path="vehicles" element={<DashboardLayout children={<Users />} />} /> */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Router>
