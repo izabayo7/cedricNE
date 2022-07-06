@@ -34,7 +34,7 @@ class AppServices {
   registerVehicle(body) {
     return axios.post(`${API_URL}/vehicles/`, body);
   }
-  getVehicle(query) {
+  getVehicles(query) {
     return axios.get(`${API_URL}/vehilces?${query}`);
   }
 
