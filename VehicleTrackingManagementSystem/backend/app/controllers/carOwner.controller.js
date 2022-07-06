@@ -2,6 +2,7 @@ const {
     validateCarOwner,
     CarOwner
 } = require("../models/carOwner.model");
+const { VehicleCarOwner } = require("../models/vehicleOwner.model");
 const { validateObjectId } = require("../utils/imports");
 
 /***

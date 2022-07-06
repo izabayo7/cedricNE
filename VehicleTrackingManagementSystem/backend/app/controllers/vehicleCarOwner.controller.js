@@ -85,6 +85,15 @@ exports.createVehicleCarOwner = async (req, res) => {
                 message: 'CarOwner Not found'
             });
 
+        const isDupplicate = await VehicleCarOwner.findOne({
+            vehiclePlateNumber: req.body.vehiclePlateNumber
+        });
+
+        if (isDupplicate)
+            return res.status(404).send({
+                message: 'VehiclePlateNumber is already used'
+            });
+
         const newVehicleCarOwner = new VehicleCarOwner(req.body);
 
         const result = await newVehicleCarOwner.save();
@@ -141,6 +150,18 @@ exports.updateVehicleCarOwner = async (req, res) => {
         if (!carOwner)
             return res.status(404).send({
                 message: 'CarOwner Not found'
+            });
+
+        const isDupplicate = await VehicleCarOwner.findOne({
+            _id: {
+                $ne: req.params.id
+            },
+            vehiclePlateNumber: req.body.vehiclePlateNumber
+        });
+
+        if (isDupplicate)
+            return res.status(404).send({
+                message: 'VehiclePlateNumber is already used'
             });
 
         const result = await VehicleCarOwner.findOneAndUpdate({
