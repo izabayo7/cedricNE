@@ -1,15 +1,138 @@
-const { getAllVehicles,createVehicle, updateVehicle, deleteVehicle } = require("../controllers/vehicle.controller");
-const { auth } = require("../middlewares/auth.middleware");
+const {
+  getAllVehicles,
+  createVehicle,
+  updateVehicle,
+  deleteVehicle
+} = require("../controllers/vehicle.controller");
+const {
+  auth
+} = require("../middlewares/auth.middleware");
 
 module.exports = (app) => {
 
   var router = require("express").Router();
 
-  // Create a new User
-  router.route("/").get([auth,getAllVehicles]).post([auth,createVehicle]);
+  router.route("/")
+    /**
+     * @swagger
+     * /vehicles:
+     *   get:
+     *     tags:
+     *       - Vehicle
+     *     description: Returns all Vehicles
+     *     parameters:
+     *       - name: page
+     *         description: page number
+     *         in: query
+     *         type: string
+     *       - name: limit
+     *         description: elements per page
+     *         in: query
+     *         type: string
+     *     responses:
+     *       200:
+     *         description: OK
+     *       400:
+     *         description: Bad Request
+     *       404:
+     *         description: Not Found
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server Error
+     */
+    .get([auth, getAllVehicles])
+    /**
+     * @swagger
+     * /vehicles:
+     *   post:
+     *     tags:
+     *       - Vehicle
+     *     description: Create a vehicle
+     *     parameters:
+     *       - name: body
+     *         description: Fields for a vehicle
+     *         in: body
+     *         required: true
+     *         schema:
+     *           $ref: '#/definitions/Vehicle'
+     *     responses:
+     *       200:
+     *         description: OK
+     *       400:
+     *         description: Bad Request
+     *       404:
+     *         description: Not Found
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server Error
+     */
+    .post([auth, createVehicle]);
 
-  // Create a new User
-  router.route("/:id").put([auth,updateVehicle]).delete([auth,deleteVehicle]);
+  router.route("/:id")
+    /**
+     * @swagger
+     * /vehicles:
+     *   put:
+     *     tags:
+     *       - Vehicle
+     *     description: Create a vehicle
+     *     security:
+     *       - bearerAuth: -[]
+     *     parameters:
+     *       - name: id
+     *         description: vehicle id
+     *         in: path
+     *         type: string
+     *         required: true
+     *       - name: body
+     *         description: Fields for a vehicle
+     *         in: body
+     *         required: true
+     *         schema:
+     *           $ref: '#/definitions/Vehicle'
+     *     responses:
+     *       200:
+     *         description: OK
+     *       400:
+     *         description: Bad Request
+     *       404:
+     *         description: Not Found
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server Error
+     */
+    .put([auth, updateVehicle])
+    /**
+     * @swagger
+     * /vehicles:
+     *   delete:
+     *     tags:
+     *       - Vehicle
+     *     description: Delete Vehicle
+     *     security:
+     *       - bearerAuth: -[]
+     *     parameters:
+     *       - name: id
+     *         description: vehicle id
+     *         in: path
+     *         type: string
+     *         required: true
+     *     responses:
+     *       200:
+     *         description: OK
+     *       400:
+     *         description: Bad Request
+     *       404:
+     *         description: Not Found
+     *       401:
+     *         description: Unauthorized
+     *       500:
+     *         description: Internal Server Error
+     */
+    .delete([auth, deleteVehicle]);
 
   app.use("/api/vehicles", router);
 };
