@@ -1,6 +1,32 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
 
+
+/**
+ * @swagger
+ * definitions:
+ *   User:
+ *     properties:
+ *       _id:
+ *         type: string
+ *       names:
+ *         type: string
+ *       email:
+ *         type: string
+ *       password:
+ *         type: string
+ *       phone:
+ *         type: string
+ *       nationalId:
+ *         type: string
+ *     required:
+ *       - names
+ *       - email
+ *       - password
+ *       - phone
+ *       - nationalId
+ */
+
 var schema = mongoose.Schema(
   {
     names: {

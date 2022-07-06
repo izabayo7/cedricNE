@@ -1,16 +1,32 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
 const { NationalIdPattern } = require("./Vehicle.model");
+
 /**
- * Vehicle{
-    id,
-    chasisNo,
-    manufactureCompany,
-    manufactureYear,
-    price,
-    model name,
-}
+ * @swagger
+ * definitions:
+ *   Vehicle:
+ *     properties:
+ *       _id:
+ *         type: string
+ *       chasisNumber:
+ *         type: string
+ *       manufactureCompany:
+ *         type: string
+ *       manufactureYear:
+ *         type: number
+ *       price:
+ *         type: number
+ *       modelName:
+ *         type: string
+ *     required:
+ *       - chasisNumber
+ *       - manufactureCompany
+ *       - manufactureYear
+ *       - price
+ *       - modelName
  */
+
 var schema = mongoose.Schema(
   {
     chasisNumber: {
