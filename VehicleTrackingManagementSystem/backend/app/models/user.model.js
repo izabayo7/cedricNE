@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
-
+const jwt = require('jsonwebtoken');
 
 /**
  * @swagger
@@ -27,34 +27,42 @@ const Joi = require('joi');
  *       - nationalId
  */
 
-var schema = mongoose.Schema(
-  {
-    names: {
-      type: String,
-      required: true,
-    },
-    email: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    phone: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    password: {
-      type: String,
-      required: true,
-    },
-    nationalId: {
-      type: String,
-      unique: true,
-      required: true,
-    },
+var schema = mongoose.Schema({
+  names: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  email: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  phone: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  nationalId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+}, {
+  timestamps: true
+});
+
+// generate login token
+schema.methods.generateAuthToken = function () {
+  return jwt.sign({
+    id: this.user_name,
+  }, process.env.JWT_SECRET, {
+    expiresIn: '5h'
+  })
+};
 
 const Model = mongoose.model("user", schema);
 module.exports.NationalIdPattern = /(?<!\d)\d{16}(?!\d)/;

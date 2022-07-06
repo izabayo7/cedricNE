@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
-const { NationalIdPattern } = require("./Vehicle.model");
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 /**
  * @swagger
  * definitions:
- *   Vehicle:
+ *   VehicleCarOwner:
  *     properties:
  *       _id:
  *         type: string
@@ -21,31 +21,31 @@ const { NationalIdPattern } = require("./Vehicle.model");
  *       - vehiclePlateNumber
  */
 
-var schema = mongoose.Schema(
-  {
-    carOwner: {
-      type: String,
-      required: true,
-      ref: "carOwner"
-    },
-    vehicle: {
-      type: String,
-      required: true,
-      ref: "vehicle"
-    },
-    vehiclePlateNumber: {
-      type: String,
-      unique:true,
-      required: true,
-    }
+var schema = mongoose.Schema({
+  carOwner: {
+    type: String,
+    required: true,
+    ref: "carOwner"
   },
-  { timestamps: true }
-);
+  vehicle: {
+    type: String,
+    required: true,
+    ref: "vehicle"
+  },
+  vehiclePlateNumber: {
+    type: String,
+    unique: true,
+    required: true,
+  }
+}, {
+  timestamps: true
+});
+schema.plugin(mongoosePaginate);
 
 const Model = mongoose.model("vehicle", schema);
 
-module.exports.Vehicle = Model;
-module.exports.validateVehicle = (body) => {
+module.exports.VehicleCarOwner = Model;
+module.exports.validateVehicleCarOwner = (body) => {
   return Joi.object({
     carOwner: Joi.string().required(),
     vehicle: Joi.string().required(),

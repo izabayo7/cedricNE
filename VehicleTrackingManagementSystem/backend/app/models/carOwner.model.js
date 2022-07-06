@@ -1,7 +1,9 @@
 const mongoose = require("mongoose");
 const Joi = require('joi');
-const { NationalIdPattern } = require("./CarOwner.model");
-
+const {
+  NationalIdPattern
+} = require("./CarOwner.model");
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 /**
  * @swagger
@@ -25,29 +27,29 @@ const { NationalIdPattern } = require("./CarOwner.model");
  *       - nationalId
  */
 
-var schema = mongoose.Schema(
-  {
-    names: {
-      type: String,
-      required: true,
-    },
-    phone: {
-      type: String,
-      unique: true,
-      required: true,
-    },
-    address: {
-      type: String,
-      required: true,
-    },
-    nationalId: {
-      type: String,
-      unique: true,
-      required: true,
-    },
+var schema = mongoose.Schema({
+  names: {
+    type: String,
+    required: true,
   },
-  { timestamps: true }
-);
+  phone: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  nationalId: {
+    type: String,
+    unique: true,
+    required: true,
+  },
+}, {
+  timestamps: true
+});
+schema.plugin(mongoosePaginate);
 
 const Model = mongoose.model("carOwner", schema);
 
