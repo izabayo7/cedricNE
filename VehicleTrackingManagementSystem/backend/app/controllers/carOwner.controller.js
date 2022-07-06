@@ -2,6 +2,7 @@ const {
     validateCarOwner,
     CarOwner
 } = require("../models/carOwner.model");
+const { validateObjectId } = require("../utils/imports");
 
 /***
  * Get all carOwners
@@ -159,7 +160,7 @@ exports.deleteCarOwner = async (req, res) => {
                 messsage: 'Invalid id'
             });
 
-        const result = await CarOwner.findOneAdDelete({
+        const result = await CarOwner.findOneAndDelete({
             _id: req.params.id
         });
         if (!result)

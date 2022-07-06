@@ -175,7 +175,7 @@ exports.deleteVehicleCarOwner = async (req, res) => {
                 messsage: 'Invalid id'
             });
 
-        const result = await VehicleCarOwner.findOneAdDelete({
+        const result = await VehicleCarOwner.findOneAndDelete({
             _id: req.params.id
         });
         if (!result)

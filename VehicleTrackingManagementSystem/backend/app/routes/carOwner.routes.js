@@ -79,7 +79,7 @@ module.exports = (app) => {
   router.route("/:id")
     /**
      * @swagger
-     * /carOwners:
+     * /carOwners/{id}:
      *   put:
      *     tags:
      *       - CarOwner
@@ -113,7 +113,7 @@ module.exports = (app) => {
     .put([auth, updateCarOwner])
     /**
      * @swagger
-     * /carOwners:
+     * /carOwners/{id}:
      *   delete:
      *     tags:
      *       - CarOwner

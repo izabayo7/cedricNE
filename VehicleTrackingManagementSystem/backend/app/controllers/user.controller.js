@@ -166,7 +166,7 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
 
-    const result = await User.findOneAdDelete({
+    const result = await User.findOneAndDelete({
       _id: req.user._id
     });
     if (!result)

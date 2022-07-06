@@ -77,7 +77,7 @@ module.exports = (app) => {
   router.route("/:id")
     /**
      * @swagger
-     * /vehicles:
+     * /vehicles/{id}:
      *   put:
      *     tags:
      *       - Vehicle
@@ -111,7 +111,7 @@ module.exports = (app) => {
     .put([auth, updateVehicle])
     /**
      * @swagger
-     * /vehicles:
+     * /vehicles/{id}:
      *   delete:
      *     tags:
      *       - Vehicle
