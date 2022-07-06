@@ -53,7 +53,7 @@ exports.getAllVehicleCarOwners = async (req, res) => {
  * @param req
  * @param res
  */
-exports.createVehicle = async (req, res) => {
+exports.createVehicleCarOwner = async (req, res) => {
     try {
         const {
             error
@@ -105,7 +105,7 @@ exports.createVehicle = async (req, res) => {
  * @param req
  * @param res
  */
-exports.updateVehicle = async (req, res) => {
+exports.updateVehicleCarOwner = async (req, res) => {
     try {
 
         if (!validateObjectId(req.params.id))
@@ -169,7 +169,7 @@ exports.updateVehicle = async (req, res) => {
  * @param req
  * @param res
  */
-exports.deleteVehicle = async (req, res) => {
+exports.deleteVehicleCarOwner = async (req, res) => {
     try {
 
         if (!validateObjectId(req.params.id))

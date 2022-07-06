@@ -24,29 +24,32 @@ exports.createUser = async (req, res) => {
       message: error.details[0].message
     });
 
-    let {
-      email,
-      nationalId,
-      phone
-    } = req.body
+    let count = await User.countDocuments({});
+    if (count) return res.status(400).send({message: "Admin is already created"});
 
-    let user = await User.findOne({
-      $or: [{
-        email
-      }, {
-        nationalId
-      }, {
-        phone
-      }],
-    })
+    // let {
+    //   email,
+    //   nationalId,
+    //   phone
+    // } = req.body
 
-    if (user) {
-      const phoneFound = phone == user.phone
-      const emailFound = email == user.email
-      return res.status(400).send({
-        message: `User with same ${phoneFound ? 'phone ' : emailFound ? 'email ' : 'nationalId '} arleady exist`
-      });
-    }
+    // let user = await User.findOne({
+    //   $or: [{
+    //     email
+    //   }, {
+    //     nationalId
+    //   }, {
+    //     phone
+    //   }],
+    // })
+
+    // if (user) {
+    //   const phoneFound = phone == user.phone
+    //   const emailFound = email == user.email
+    //   return res.status(400).send({
+    //     message: `User with same ${phoneFound ? 'phone ' : emailFound ? 'email ' : 'nationalId '} arleady exist`
+    //   });
+    // }
 
     req.body.password = await hashPassword(req.body.password);
 
