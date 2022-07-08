@@ -44,7 +44,7 @@ module.exports = (app) => {
      *       500:
      *         description: Internal Server Error
      */
-    .get([admin,auth, getAllCandidates])
+    .get([auth,admin, getAllCandidates])
     /**
      * @swagger
      * /candidates:
@@ -73,7 +73,7 @@ module.exports = (app) => {
      *       500:
      *         description: Internal Server Error
      */
-    .post([admin,auth, createCandidate]);
+    .post([auth,admin, createCandidate]);
 
   router.route("/:id")
     /**
@@ -109,7 +109,7 @@ module.exports = (app) => {
      *       500:
      *         description: Internal Server Error
      */
-    .put([admin,auth, updateCandidate])
+    .put([auth,admin, updateCandidate])
     /**
      * @swagger
      * /candidates/{id}:
@@ -137,7 +137,7 @@ module.exports = (app) => {
      *       500:
      *         description: Internal Server Error
      */
-    .delete([admin,auth, deleteCandidate]);
+    .delete([auth,admin, deleteCandidate]);
 
   app.use("/api/candidates", router);
 };

@@ -14,6 +14,22 @@ export const register = async (data) => {
     
 }
 
+export const createCandidate = async (data) => {
+    return axios.post(API_URL+'/candidates', data, {
+        headers: {
+            'Authorization': 'Bearer ' + await _getToken()
+        }
+    })
+    .then((res) => {
+        return {...res?.data,success: true}
+    })
+    .catch((err) => {
+        return err?.response?.data;
+    }
+    )
+    
+}
+
 export const login = async (data) => {
     return axios.post(API_URL+'/users/login', data)
     .then((res) => {
@@ -27,7 +43,23 @@ export const login = async (data) => {
 }
 
 export const getProfile = async () => {
-    return axios.get(API_URL+'/auth/profile', {
+    return axios.get(API_URL+'/users/current', {
+        headers: {
+            'Authorization': 'Bearer ' + await _getToken()
+        }
+    })
+    .then((res) => {
+        return res?.data
+    }
+    )
+    .catch((err) => {
+        return err?.response?.data;
+    }
+    )
+}
+
+export const getCandidates = async () => {
+    return axios.get(API_URL+'/candidates', {
         headers: {
             'Authorization': 'Bearer ' + await _getToken()
         }

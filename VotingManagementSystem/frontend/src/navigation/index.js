@@ -1,19 +1,77 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Login from '../screens/auth/login';
-import Onboard from '../screens/auth/onboard';
+import { useEffect, useState } from 'react';
+import Home from '../screens/others';
+import AddCandidate from '../screens/others/createCandidate';
 import Register from '../screens/auth/register';
 
-const Stack = createNativeStackNavigator();
-const {Navigator, Screen} = Stack;
+// const Tabs = createBottomTabNavigator()
 
-const  AppStack = () =>  {
-  return (
-    <Navigator>
-      <Screen name="Register" component={Register} options={{ headerShown: false }} />
-      <Screen name="Login" component={Login} options={{ headerShown: false }} />
-      <Screen name="Onboard" component={Onboard} options={{ headerShown: false }} />
-    </Navigator>
-  );
+export default function Navigator() {
+    const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+    useEffect(() => {
+
+        async function getAuthToken() {
+            const token = await SecureStore.getItemAsync('token')
+            if (token) {
+                setIsLoggedIn(true)
+            }
+        }
+        getAuthToken()
+    }, [])
+
+    if (!isLoggedIn) return <AuthNavigation />
+    return <AppNavigation />
 }
 
-export default AppStack;
+export function AuthNavigation() {
+  const Stack = createNativeStackNavigator();
+  return (
+      <Stack.Navigator
+          initialRouteName="Login"
+          >
+          <Stack.Screen 
+              name="Login"
+              component={Login}
+              options={{headerShown: false}}
+          />
+
+          <Stack.Screen 
+              name="Register"
+              component={Register}
+              options={{headerShown: false}}
+          />
+
+          <Stack.Screen
+            name="App"
+            options={{headerShown: false}}
+            component={AppNavigation}
+          />
+
+      </Stack.Navigator>
+  )
+}
+
+
+export function AppNavigation() {
+  const Stack = createNativeStackNavigator();
+  return (
+      <Stack.Navigator
+          initialRouteName="Home"
+          >
+          <Stack.Screen 
+              name="Home"
+              component={Home}
+              options={{headerShown: false}}
+          />
+
+          <Stack.Screen 
+              name="AddCandidate"
+              component={AddCandidate}
+              options={{headerShown: false}}
+          />
+
+      </Stack.Navigator>
+  )
+}

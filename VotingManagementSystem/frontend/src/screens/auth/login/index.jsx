@@ -37,7 +37,7 @@ const Login = ({ navigation }) => {
     setLoading(false);
     if(!res?.token) return setAuthError(res?.message || "Something went wrong");
     await SecureStore.setItemAsync('token', res?.token);
-    navigation.navigate('Onboard');
+    navigation.navigate('App');
   }
   
 
