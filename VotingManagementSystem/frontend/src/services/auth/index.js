@@ -5,7 +5,7 @@ import * as SecureStorage from 'expo-secure-store'
 export const register = async (data) => {
     return axios.post(API_URL+'/users', data)
     .then((res) => {
-        return res?.data
+        return {...res?.data,success: true}
     })
     .catch((err) => {
         return err?.response?.data;

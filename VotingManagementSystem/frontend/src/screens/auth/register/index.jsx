@@ -27,7 +27,7 @@ const SignUp = ({ navigation }) => {
     nationalId: "",
     email: "",
     password: "",
-    type: "VOTER",
+    category: "VOTER",
   };
   const validationSchema = Yup.object().shape({
     name: Yup.string().required("Name is required"),
@@ -57,10 +57,17 @@ const SignUp = ({ navigation }) => {
     setLoading(true);
     setAuthError("");
     const res = await register(values);
-    console.log(res)
     setLoading(false);
-    if (!res?.success)
-      return setAuthError(res?.message || "Something went wrong");
+    if (!res?.success){
+      let message = "Something went wrong";
+      if(res?.message){
+        message=res.message;
+        if(message.includes("required pattern"))
+        if(message.includes("phone")) message= "invalid phone number";
+        else message= "invalid nationalId"
+      }
+      return setAuthError(message);
+    }
     navigation.navigate("Login");
   };
 
@@ -92,8 +99,8 @@ const SignUp = ({ navigation }) => {
                     />
                   }
                   placeholder="Full Name"
-                  onChangeText={handleChange("name")}
-                  onBlur={handleBlur("name")}
+                  onChangeText={handleChange("names")}
+                  onBlur={handleBlur("names")}
                   value={values.name}
                   borderColor={touched.name && errors.name ? "red" : "gray"}
                 />
@@ -110,8 +117,8 @@ const SignUp = ({ navigation }) => {
                     />
                   }
                   placeholder="Address"
-                  onChangeText={handleChange("name")}
-                  onBlur={handleBlur("name")}
+                  onChangeText={handleChange("address")}
+                  onBlur={handleBlur("address")}
                   value={values.address}
                   borderColor={
                     touched.address && errors.address ? "red" : "gray"
@@ -130,8 +137,8 @@ const SignUp = ({ navigation }) => {
                     />
                   }
                   placeholder="Phone"
-                  onChangeText={handleChange("name")}
-                  onBlur={handleBlur("name")}
+                  onChangeText={handleChange("phone")}
+                  onBlur={handleBlur("phone")}
                   value={values.phone}
                   borderColor={touched.phone && errors.phone ? "red" : "gray"}
                 />
@@ -148,9 +155,9 @@ const SignUp = ({ navigation }) => {
                     />
                   }
                   placeholder="NationalId"
-                  onChangeText={handleChange("name")}
-                  onBlur={handleBlur("name")}
-                  value={values.address}
+                  onChangeText={handleChange("nationalId")}
+                  onBlur={handleBlur("nationalId")}
+                  value={values.nationalId}
                   borderColor={
                     touched.nationalId && errors.nationalId ? "red" : "gray"
                   }
