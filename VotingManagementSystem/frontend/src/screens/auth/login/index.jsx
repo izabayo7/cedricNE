@@ -34,10 +34,9 @@ const Login = ({ navigation }) => {
     setLoading(true);
     setAuthError("");
     const res = await login(values);
-    console.log(res);
     setLoading(false);
-    if(!res?.success) return setAuthError(res?.message || "Something went wrong");
-    await SecureStore.setItemAsync('token', res?.data?.token);
+    if(!res?.token) return setAuthError(res?.message || "Something went wrong");
+    await SecureStore.setItemAsync('token', res?.token);
     navigation.navigate('Onboard');
   }
   
