@@ -26,11 +26,17 @@ exports.getAllCandidates = async (req, res) => {
             limit: limit
         };
 
-        const data = await Candidate.paginate({}, options)
+        let data = await Candidate.paginate({}, options)
+        data = JSON.parse(JSON.stringify(data));
+        for (const el of data.docs) {
+            let count = await Votes.countDocuments({candidate: el._id});
+            el.total_votes = count;
+        }
 
         res.send({
             data
         });
+
     } catch (e) {
         return res.status(500).send(e.toString().split('\"').join(''))
     }

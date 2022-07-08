@@ -44,7 +44,7 @@ module.exports = (app) => {
      *       500:
      *         description: Internal Server Error
      */
-    .get([auth,admin, getAllCandidates])
+    .get([auth, getAllCandidates])
     /**
      * @swagger
      * /candidates:

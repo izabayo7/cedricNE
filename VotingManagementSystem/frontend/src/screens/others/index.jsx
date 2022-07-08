@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable, Image } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import tw from "twrnc";
-import Button from "../../components/button";
-import { getCandidates, getProfile } from "../../services/auth";
+import MyButton from "../../components/button";
+import { createVote, getCandidates, getProfile } from "../../services/auth";
+import { Avatar, Button, Card, Title, Paragraph } from "react-native-paper";
 
-const Onboard = ({ navigation }) => {
-  const [name, setName] = useState("");
+const Home = ({ navigation }) => {
+  const [user, setUser] = useState("");
   const [candidates, setCandidates] = useState([]);
+  const [authError, setAuthError] = useState("");
 
   const getUserProfile = async () => {
     const profile = await getProfile();
     if (!profile?.data) return navigation.navigate("Login");
-    setName(profile?.data?.names);
+    setUser(profile?.data);
 
-    const candidates = await getCandidates();
-    setCandidates(candidates?.data?.docs);
+    const res = await getCandidates();
+    setCandidates(res?.data?.docs || []);
   };
   useEffect(() => {
     getUserProfile();
@@ -26,30 +28,79 @@ const Onboard = ({ navigation }) => {
     navigation.navigate("Login");
   };
 
-  return (
-    <View style={tw`h-full flex justify-around items-center`}>
-      <View>
-        <Text style={tw`font-bold text-xl`}>Welcome Onboard</Text>
-        <Text style={tw`font-bold text-xl text-center`}>{name}</Text>
+  const handleVote = async (candidate) => {
+    let res = await createVote({ user: user._id, candidate });
+    if (!res?.success) {
+      setAuthError(res?.message || "Something went wrong");
+      setTimeout(() => {
+        setAuthError("");
+      }, 3000);
+      return;
+    }
+    res = await getCandidates();
+    setCandidates(res?.data?.docs || []);
+  };
 
-        <View style={tw`flex`}>
-          <Text>Test</Text> <Text>Test</Text>
-        </View>
+  return (
+    <View style={tw`h-full flex pt-20 items-center`}>
+      <View>
+        <Text style={tw`font-bold text-xl text-center`}>
+          Welcome in Voting MS
+        </Text>
+        <Text style={tw`font-bold text-xl text-center mb-10`}>
+          {user.names}
+        </Text>
+        {candidates?.map((el) => (
+          <View key={el._id} style={tw` mb-4 w-[80]`}>
+            <Card>
+              <Card.Title
+                title={el.names}
+                subtitle={
+                  authError !== "" ? (
+                    <Text style={tw`mt-4 text-red-500 text-center`}>
+                      {authError}
+                    </Text>
+                  ) : (
+                    <Text>{el.total_votes || 0} votes</Text>
+                  )
+                }
+              />
+              <Card.Content>
+                <Paragraph>{el.missionStatement}</Paragraph>
+              </Card.Content>
+              <Card.Actions>
+                <Button
+                  onPress={() => {
+                    handleVote(el._id);
+                  }}
+                >
+                  Vote
+                </Button>
+              </Card.Actions>
+            </Card>
+          </View>
+        ))}
 
         <View style={tw`mt-8`}>
           <Pressable onPress={handleLogout}>
-            <Button style={tw`bg-black text-white w-full rounded-[10px]`}>
+            <MyButton
+              style={tw`bg-black text-white w-full mb-4 rounded-[10px]`}
+            >
               LOGOUT
-            </Button>
+            </MyButton>
           </Pressable>
           <Pressable
             onPress={() => {
               navigation.navigate("AddCandidate");
             }}
           >
-            <Button style={tw`bg-black text-white w-full rounded-[10px]`}>
-              Create Candidate
-            </Button>
+            {user.category === "ADMIN" ? (
+              <MyButton style={tw`bg-black text-white w-full rounded-[10px]`}>
+                Create Candidate
+              </MyButton>
+            ) : (
+              <View></View>
+            )}
           </Pressable>
         </View>
       </View>
@@ -57,4 +108,4 @@ const Onboard = ({ navigation }) => {
   );
 };
 
-export default Onboard;
+export default Home;

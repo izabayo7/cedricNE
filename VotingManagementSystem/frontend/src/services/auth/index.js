@@ -30,6 +30,22 @@ export const createCandidate = async (data) => {
     
 }
 
+export const createVote = async (data) => {
+    return axios.post(API_URL+'/votes', data, {
+        headers: {
+            'Authorization': 'Bearer ' + await _getToken()
+        }
+    })
+    .then((res) => {
+        return {...res?.data,success: true}
+    })
+    .catch((err) => {
+        return err?.response?.data;
+    }
+    )
+    
+}
+
 export const login = async (data) => {
     return axios.post(API_URL+'/users/login', data)
     .then((res) => {

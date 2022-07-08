@@ -53,6 +53,7 @@ exports.getAllVotes = async (req, res) => {
  */
 exports.createVotes = async (req, res) => {
     try {
+        console.log(req.body)
         const {
             error
         } = validateVotes(req.body);
@@ -85,13 +86,12 @@ exports.createVotes = async (req, res) => {
             });
 
         const isDuplicate = await Votes.findOne({
-            candidate: req.body.candidate,
             user: req.body.user
         });
 
         if (isDuplicate)
             return res.status(404).send({
-                message: 'Voter have already voted'
+                message: 'You can\'t vote twice'
             });
 
         const newVote = new Votes(req.body);
