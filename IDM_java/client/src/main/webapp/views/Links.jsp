@@ -6,7 +6,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Report</title>
+    <title>Website Links</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,400;1,100&display=swap"
@@ -62,7 +62,7 @@
 <body>
 <jsp:include page="components/Navbar.jsp"></jsp:include>
 <div class="report-container">
-    <h2>Report</h2>
+    <h2>Website Links</h2>
     <div class="report-container-sub">
         <table>
             <thead class="table-header">

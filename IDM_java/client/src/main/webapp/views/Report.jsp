@@ -75,13 +75,14 @@
             </thead>
             <tbody class="table-body">
             <c:forEach items="${websites}" var="url">
-                <td><a href="/links/${url.id}">${url.website_name}</a></td>
-                    <td>${url.download_start_date_time}</td>
-                    <td>${url.download_end_date_time}</td>
-                    <td>${url.total_elapsed_time}</td>
-                    <td>${url.total_downloaded_kilobytes}</td>
-                </td>
-
+                <tr>
+                    <td><a href="/links/${url.id}">${url.website_name}</a></td>
+                        <td>${url.download_start_date_time}</td>
+                        <td>${url.download_end_date_time}</td>
+                        <td>${url.total_elapsed_time}</td>
+                        <td>${url.total_downloaded_kilobytes}</td>
+                    </td>
+                </tr>
             </c:forEach>
 
             </tbody>
