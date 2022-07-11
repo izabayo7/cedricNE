@@ -32,15 +32,32 @@ public class LinkServiceImpl implements ILinkService {
         return linkRepository.findAll();
     }
 
+    public void createFolder(String path){
+        System.out.println(path);
+        File pathAsFile = new File(path);
+        if (!Files.exists(Paths.get(path))) {
+            pathAsFile.mkdirs();
+        }
+    }
+
     @Override
     public Link create(CreateLinkDTO linkDTO) throws IOException {
         Link link = new Link();
-        link.setLink_name(linkDTO.getUrl().getHost());
+
+        String filePath= linkDTO.getPath();
+
+        if(linkDTO.getFileName().isBlank()){
+            link.setLink_name(linkDTO.getFileName());
+            filePath = filePath+"index.html";
+        } else {
+            link.setLink_name(linkDTO.getUrl().getHost());
+            filePath = filePath+linkDTO.getFileName();
+        }
+
         link.setWebsite_id(linkDTO.getWebsite_id());
 
-        LocalDateTime start = LocalDateTime.now();
 
-        String filePath = linkDTO.getPath()+"/"+link.getLink_name();
+        LocalDateTime start = LocalDateTime.now();
 
         BufferedReader readr =
                 new BufferedReader(new InputStreamReader(linkDTO.getUrl().openStream()));

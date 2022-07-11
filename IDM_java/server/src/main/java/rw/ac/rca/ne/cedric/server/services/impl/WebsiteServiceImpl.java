@@ -49,12 +49,7 @@ public class WebsiteServiceImpl implements IWebsiteService {
 
         Set<String> links = new HashSet<>();
 
-        Document doc = Jsoup.connect(url)
-                .data("query", "Java")
-                .userAgent("Mozilla")
-                .cookie("auth", "token")
-                .timeout(3000)
-                .get();
+        Document doc = Jsoup.connect(url).get();
 
         Elements elements = doc.select("a[href]");
         for (Element element : elements) {
@@ -68,17 +63,14 @@ public class WebsiteServiceImpl implements IWebsiteService {
     public void createFolder(String path){
         File pathAsFile = new File(path);
         if (!Files.exists(Paths.get(path))) {
-            pathAsFile.mkdir();
+            pathAsFile.mkdirs();
         }
     }
 
     @Override
     public Website create(URL url) throws IOException {
 
-        UUID id = UUID.randomUUID();
-
         Website website = new Website();
-        website.setId(id);
         website.setWebsite_name(url.getHost());
         website.setDownload_start_date_time(LocalDateTime.now());
 
@@ -87,16 +79,11 @@ public class WebsiteServiceImpl implements IWebsiteService {
         if(fileName.isEmpty() || fileName.length() < 3){
             fileName = "index.html";
         }
-        System.out.println(fileName);
         String filePath = savingPath+"/"+website.getWebsite_name()+"/";
-        String linksFilePath = filePath+"links";
+        String linksPath = filePath+"links";
 
         // create folder if it does not exist
-        createFolder(savingPath);
-        createFolder(filePath);
-        createFolder(linksFilePath);
-
-        Set<CreateLinkDTO> linksToSave = new HashSet<>();
+        createFolder(linksPath);
 
         BufferedReader readr =
                 new BufferedReader(new InputStreamReader(url.openStream()));
@@ -109,15 +96,6 @@ public class WebsiteServiceImpl implements IWebsiteService {
         String line;
         while ((line = readr.readLine()) != null) {
             writer.write(line);
-//            Set<String> links = findLinks(line);
-//            for (String link: links) {
-//                CreateLinkDTO linkDTO = new CreateLinkDTO();
-//                linkDTO.setWebsite_id(id);
-//                linkDTO.setPath(linksFilePath);
-//                linkDTO.setUrl(new URL(link));
-//
-//                linksToSave.add(linkDTO);
-//            }
         }
 
         readr.close();
@@ -130,7 +108,23 @@ public class WebsiteServiceImpl implements IWebsiteService {
 
         Website saved = websiteRepository.save(website);
 
-//        for (CreateLinkDTO linkDTO: linksToSave) {
+//        Set<String> links = findLinks(url.toExternalForm());
+//        for (String link: links) {
+//            CreateLinkDTO linkDTO = new CreateLinkDTO();
+//            linkDTO.setWebsite_id(saved.getId());
+//            Boolean isFromSameSite = link.charAt(0)=='/';
+//            if(isFromSameSite){
+//                URL _url = new URL(url.toExternalForm()+link);
+//                linkDTO.setUrl(_url);
+//                if(_url.getFile().length()<3){
+//                    linkDTO.setFileName("index.html");
+//                } else {
+//                    linkDTO.setFileName(_url.getFile());
+//                }
+//            } else {
+//                linkDTO.setUrl(new URL(link));
+//            }
+//            linkDTO.setPath(linksPath);
 //            linkService.create(linkDTO);
 //        }
 

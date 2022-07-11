@@ -10,5 +10,6 @@ public class CreateLinkDTO {
 
     private URL url;
     private String path;
+    private String fileName;
     private UUID website_id;
 }

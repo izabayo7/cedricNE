@@ -15,7 +15,7 @@ import java.util.UUID;
 @Getter
 @Setter
 @Entity
-@Table(name = "website")
+@Table(name = "websites")
 public class Website {
 
     @Id
