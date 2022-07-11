@@ -13,8 +13,6 @@ public class Link {
 
     private String link_name;
 
-    private UUID website_id;
-
     private Long  total_elapsed_time;
 
     private Long  total_downloaded_kilobytes;

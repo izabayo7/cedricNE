@@ -9,9 +9,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.client.RestTemplate;
+import rw.ac.rca.ne.cedric.dao.Link;
 import rw.ac.rca.ne.cedric.dao.Website;
 import rw.ac.rca.ne.cedric.utils.ApiResponse;
 import rw.ac.rca.ne.cedric.utils.Utility;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/")
@@ -65,5 +68,19 @@ public class UrlController {
         model.addAttribute("websites", Objects.requireNonNull(websitesResponse.getBody()));
 
         return "Report";
+    }
+
+    @GetMapping("/links/{id}")
+    public String links(HttpServletRequest request, Model model, @PathVariable UUID id) {
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<Object> entity = new HttpEntity<>(null, headers);
+
+        ResponseEntity<Link[]> websitesResponse = restTemplate.exchange(Utility.formatURL("/api/websites/links/"+id), HttpMethod.GET, entity, Link[].class);
+
+        model.addAttribute("links", Objects.requireNonNull(websitesResponse.getBody()));
+
+        return "Links";
     }
 }

@@ -27,7 +27,7 @@
             font-size: 16px;
             color: white;
         }
-        a{
+        .navbar-container a{
             text-decoration: none;
             color: white;
         }

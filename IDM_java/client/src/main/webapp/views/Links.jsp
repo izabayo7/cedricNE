@@ -66,22 +66,20 @@
     <div class="report-container-sub">
         <table>
             <thead class="table-header">
+            <th>Link Name</th>
             <th>Website Name</th>
-            <th>Download start date time</th>
-            <th>Download end date time</th>
             <th>Total elapsed time(MS)</th>
             <th>Kilobytes Downloaded</th>
 
             </thead>
             <tbody class="table-body">
-            <c:forEach items="${websites}" var="url">
-                <td><a href="/links/${url.id}">${url.website_name}</a></td>
-                    <td>${url.download_start_date_time}</td>
-                    <td>${url.download_end_date_time}</td>
+            <c:forEach items="${links}" var="url">
+                <tr>
+                    <td>${url.link_name}</td>
+                    <td>${url.website.website_name}</td>
                     <td>${url.total_elapsed_time}</td>
                     <td>${url.total_downloaded_kilobytes}</td>
-                </td>
-
+                </tr>
             </c:forEach>
 
             </tbody>
