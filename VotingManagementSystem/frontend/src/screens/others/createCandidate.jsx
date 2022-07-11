@@ -23,6 +23,7 @@ const CreateCandidate = ({ navigation }) => {
     names: "",
     missionStatement: "",
     gender: "",
+    profilePicture: "",
     nationalId: ""
   };
   const validationSchema = Yup.object().shape({
@@ -30,6 +31,7 @@ const CreateCandidate = ({ navigation }) => {
     missionStatement: Yup.string().required("Mission statement is required"),
     gender: Yup.string().required("Gender is required"),
     nationalId: Yup.string().required("NationalId is required"),
+    profilePicture: Yup.string(),
   });
 
   const formik = useFormik({
@@ -154,6 +156,26 @@ const CreateCandidate = ({ navigation }) => {
                 />
                 {touched.nationalId && errors.nationalId && (
                   <Text style={tw`text-red-500`}>{errors.nationalId}</Text>
+                )}
+
+                <Input
+                  Icon={
+                    <AntDesign
+                      name="picture"
+                      size={24}
+                      color="silver"
+                    />
+                  }
+                  placeholder="profilePicture url"
+                  onChangeText={handleChange("profilePicture")}
+                  onBlur={handleBlur("profilePicture")}
+                  value={values.profilePicture}
+                  borderColor={
+                    touched.profilePicture && errors.profilePicture ? "red" : "gray"
+                  }
+                />
+                {touched.profilePicture && errors.profilePicture && (
+                  <Text style={tw`text-red-500`}>{errors.profilePicture}</Text>
                 )}
 
                 <View style={tw`mt-8`}>

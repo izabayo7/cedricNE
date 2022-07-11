@@ -21,9 +21,6 @@ const Home = ({ navigation }) => {
     const res = await getCandidates();
     setCandidates(res?.data?.docs || []);
   };
-  useEffect(() => {
-    getUserProfile();
-  }, []);
 
   useEffect(() => {
     isFocused && getUserProfile()
@@ -61,6 +58,8 @@ const Home = ({ navigation }) => {
             {candidates?.map((el) => (
               <View key={el._id} style={tw` mb-4 w-[80]`}>
                 <Card>
+                  {el.profilePicture && el.profilePicture !== "" ? <Card.Cover source={{ uri: el.profilePicture }} /> : <View></View>}
+                
                   <Card.Title
                     title={el.names}
                     subtitle={
