@@ -56,7 +56,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/api/auth/signin","/api/auth/register").permitAll()
-                .antMatchers("/api/websites").permitAll()
+                .antMatchers("/api/websites/**").permitAll()
                 .antMatchers(
                         "/v2/api-docs",
                         "/configuration/ui",

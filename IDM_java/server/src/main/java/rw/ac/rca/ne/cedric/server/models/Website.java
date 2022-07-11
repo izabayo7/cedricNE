@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -19,7 +21,10 @@ import java.util.UUID;
 public class Website {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Type(type="uuid-char")
+    @Column(columnDefinition = "VARCHAR(255)")
     private UUID id;
 
     private String website_name;
@@ -33,8 +38,4 @@ public class Website {
     private Long  total_elapsed_time;
 
     private Long  total_downloaded_kilobytes;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "website",  cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private Set<Link> links = new HashSet<>();
 }

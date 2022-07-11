@@ -65,7 +65,7 @@
             <th>Website Name</th>
             <th>Download start date time</th>
             <th>Download end date time</th>
-<%--            <th>Link Name</th>--%>
+            <th>Total elapsed time(MS)</th>
             <th>Kilobytes Downloaded</th>
 
             </thead>
@@ -75,7 +75,7 @@
                     <td>${url.website_name}</td>
                     <td>${url.download_start_date_time}</td>
                     <td>${url.download_end_date_time}</td>
-<%--                    <td></td>--%>
+                    <td>${url.total_elapsed_time}</td>
                     <td>${url.total_downloaded_kilobytes}</td>
                 </tr>
 

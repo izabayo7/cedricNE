@@ -4,7 +4,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import rw.ac.rca.ne.cedric.server.models.Link;
+import rw.ac.rca.ne.cedric.server.models.Website;
 import rw.ac.rca.ne.cedric.server.repositories.ILinkRepository;
+import rw.ac.rca.ne.cedric.server.repositories.IWebsiteRepository;
 import rw.ac.rca.ne.cedric.server.services.ILinkService;
 import rw.ac.rca.ne.cedric.server.utils.dtos.CreateLinkDTO;
 
@@ -16,11 +18,15 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Service
 public class LinkServiceImpl implements ILinkService {
 
     private final ILinkRepository linkRepository;
+
+    @Autowired
+    private IWebsiteRepository websiteRepository;
 
     @Autowired
     public LinkServiceImpl(ILinkRepository linkRepository) {
@@ -40,21 +46,15 @@ public class LinkServiceImpl implements ILinkService {
         }
     }
 
+
+
     @Override
     public Link create(CreateLinkDTO linkDTO) throws IOException {
         Link link = new Link();
 
-        String filePath= linkDTO.getPath();
-
-        if(linkDTO.getFileName().isBlank()){
-            link.setLink_name(linkDTO.getFileName());
-            filePath = filePath+"index.html";
-        } else {
-            link.setLink_name(linkDTO.getUrl().getHost());
-            filePath = filePath+linkDTO.getFileName();
-        }
-
-        link.setWebsite_id(linkDTO.getWebsite_id());
+        String filePath= linkDTO.getPath() + "/index.html";
+        link.setLink_name(linkDTO.getUrl().getFile());
+        link.setWebsite(linkDTO.getWebsite());
 
 
         LocalDateTime start = LocalDateTime.now();
@@ -77,6 +77,14 @@ public class LinkServiceImpl implements ILinkService {
         LocalDateTime end = LocalDateTime.now();
         link.setTotal_elapsed_time(Duration.between(start,end).toMillis());
         link.setTotal_downloaded_kilobytes(Files.size(Paths.get(filePath)) / 1024);
+        link.setId(UUID.randomUUID());
         return linkRepository.save(link);
+    }
+
+    @Override
+    public List<Link> findByWebsite(UUID websiteId) {
+        Website website = websiteRepository.findById(websiteId).get();
+
+        return linkRepository.findByWebsite(website);
     }
 }

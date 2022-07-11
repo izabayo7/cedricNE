@@ -45,11 +45,16 @@ public class WebsiteServiceImpl implements IWebsiteService {
         return websiteRepository.findAll();
     }
 
-    public static Set<String> findLinks(String url) throws IOException {
+    public static Set<String> findLinks(String url) {
 
         Set<String> links = new HashSet<>();
 
-        Document doc = Jsoup.connect(url).get();
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).get();
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
 
         Elements elements = doc.select("a[href]");
         for (Element element : elements) {
@@ -62,72 +67,83 @@ public class WebsiteServiceImpl implements IWebsiteService {
 
     public void createFolder(String path){
         File pathAsFile = new File(path);
+        System.out.println(path+"creating folder");
         if (!Files.exists(Paths.get(path))) {
             pathAsFile.mkdirs();
         }
     }
 
     @Override
-    public Website create(URL url) throws IOException {
+    public Website create(URL url) {
 
-        Website website = new Website();
-        website.setWebsite_name(url.getHost());
-        website.setDownload_start_date_time(LocalDateTime.now());
+        try {
 
-        String fileName = url.getFile();
-        // use index.html on urls without filename
-        if(fileName.isEmpty() || fileName.length() < 3){
-            fileName = "index.html";
+            Website website = new Website();
+            website.setWebsite_name(url.getHost());
+            website.setDownload_start_date_time(LocalDateTime.now());
+
+            String fileName = url.getFile();
+            // use index.html on urls without filename
+            if (fileName.isEmpty() || fileName.length() < 3) {
+                fileName = "index.html";
+            }
+            String filePath = savingPath + "/" + website.getWebsite_name() + "/";
+            String linksPath = filePath + "links";
+
+            // create folder if it does not exist
+            createFolder(linksPath);
+
+            BufferedReader readr =
+                    new BufferedReader(new InputStreamReader(url.openStream()));
+
+            // Enter filename in which you want to download
+            BufferedWriter writer =
+                    new BufferedWriter(new FileWriter(filePath + fileName));
+
+            // read each line from stream till end
+            String line;
+            while ((line = readr.readLine()) != null) {
+                writer.write(line);
+            }
+
+            readr.close();
+            writer.close();
+            website.setDownload_end_date_time(LocalDateTime.now());
+
+            website.setTotal_downloaded_kilobytes(Files.size(Paths.get(filePath + fileName)) / 1024);
+
+            website.setTotal_elapsed_time(Duration.between(website.getDownload_start_date_time(), website.getDownload_end_date_time()).toMillis());
+
+            website.setId(UUID.randomUUID());
+            Website saved = websiteRepository.save(website);
+            System.out.println(saved.getId());
+            Set<String> links = findLinks(url.toExternalForm());
+            for (String link : links) {
+                CreateLinkDTO linkDTO = new CreateLinkDTO();
+                linkDTO.setWebsite(saved);
+                if (link.isEmpty()) continue;
+                Boolean isFromSameSite = link.charAt(0) == '/';
+                if (isFromSameSite) {
+                    URL _url = new URL(url.toExternalForm() + link.substring(1));
+                    createFolder(filePath + link.substring(1));
+                    linkDTO.setUrl(_url);
+                    linkDTO.setPath(filePath + link.substring(1));
+                }
+                else {
+                    URL _url = new URL(link);
+                    linkDTO.setUrl(_url);
+                    createFolder(linksPath + "/" + _url.getHost());
+                    linkDTO.setPath(linksPath);
+                }
+
+                linkService.create(linkDTO);
+            }
+
+            return saved;
         }
-        String filePath = savingPath+"/"+website.getWebsite_name()+"/";
-        String linksPath = filePath+"links";
-
-        // create folder if it does not exist
-        createFolder(linksPath);
-
-        BufferedReader readr =
-                new BufferedReader(new InputStreamReader(url.openStream()));
-
-        // Enter filename in which you want to download
-        BufferedWriter writer =
-                new BufferedWriter(new FileWriter(filePath+fileName));
-
-        // read each line from stream till end
-        String line;
-        while ((line = readr.readLine()) != null) {
-            writer.write(line);
+        catch (IOException e){
+            System.out.println(e.getMessage());
+            return null;
         }
-
-        readr.close();
-        writer.close();
-        website.setDownload_end_date_time(LocalDateTime.now());
-
-        website.setTotal_downloaded_kilobytes(Files.size(Paths.get(filePath+fileName)) / 1024);
-
-        website.setTotal_elapsed_time(Duration.between(website.getDownload_start_date_time(),website.getDownload_end_date_time()).toMillis());
-
-        Website saved = websiteRepository.save(website);
-
-//        Set<String> links = findLinks(url.toExternalForm());
-//        for (String link: links) {
-//            CreateLinkDTO linkDTO = new CreateLinkDTO();
-//            linkDTO.setWebsite_id(saved.getId());
-//            Boolean isFromSameSite = link.charAt(0)=='/';
-//            if(isFromSameSite){
-//                URL _url = new URL(url.toExternalForm()+link);
-//                linkDTO.setUrl(_url);
-//                if(_url.getFile().length()<3){
-//                    linkDTO.setFileName("index.html");
-//                } else {
-//                    linkDTO.setFileName(_url.getFile());
-//                }
-//            } else {
-//                linkDTO.setUrl(new URL(link));
-//            }
-//            linkDTO.setPath(linksPath);
-//            linkService.create(linkDTO);
-//        }
-
-        return saved;
     }
 }

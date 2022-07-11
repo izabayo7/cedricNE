@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -17,20 +19,19 @@ import java.util.UUID;
 public class Link {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Type(type="uuid-char")
+    @Column(columnDefinition = "VARCHAR(255)")
     private UUID id;
 
     private String link_name;
 
-    private UUID website_id;
+    @ManyToOne
+    private Website website;
 
     private Long  total_elapsed_time;
 
     private Long  total_downloaded_kilobytes;
-
-    @JsonBackReference
-    @ManyToOne
-    @JoinColumn(name = "website_id", insertable = false, updatable = false)
-    private Website website;
 
 }
