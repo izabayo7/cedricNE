@@ -68,7 +68,7 @@ if(celsius < 35 ){
     // Turn on RED LED
     digitalWrite(REDPIN, HIGH);
     // Turn on BUZZER
-   // digitalWrite(BUZZERPIN, HIGH);
+    digitalWrite(BUZZERPIN, HIGH);
 
     lcd.clear();
     lcd.setCursor(0,0);
