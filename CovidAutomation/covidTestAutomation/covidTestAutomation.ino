@@ -40,7 +40,7 @@ void loop() {
   
   // Read Temperature
   int analogValue = analogRead(TEMPVOUT);
-  float celsius = (analogValue * (3300 / 1024.0) * 100)/1000;
+  float celsius = (analogValue * (3.3 / 1024.0) * 100);
 
   Serial.print("Current temperature=   ");
   Serial.println((String)celsius);
