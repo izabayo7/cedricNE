@@ -40,8 +40,7 @@ void loop() {
   
   // Read Temperature
   int analogValue = analogRead(TEMPVOUT);
-  float millivolts = (analogValue/1024.0) * 5; //3300 is the voltage provided by NodeMCU
-  float celsius = millivolts*100;
+  float celsius = (analogValue * (3300 / 1024.0) * 100)/1000;
 
   Serial.print("Current temperature=   ");
   Serial.println((String)celsius);
@@ -69,7 +68,7 @@ if(celsius < 35 ){
     // Turn on RED LED
     digitalWrite(REDPIN, HIGH);
     // Turn on BUZZER
-    digitalWrite(BUZZERPIN, HIGH);
+   // digitalWrite(BUZZERPIN, HIGH);
 
     lcd.clear();
     lcd.setCursor(0,0);
